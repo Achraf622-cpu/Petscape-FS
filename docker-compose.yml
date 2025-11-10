@@ -1,0 +1,83 @@
+services:
+
+  # ─── PostgreSQL Database ────────────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    container_name: petscape-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: petscape
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - petscape-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d petscape"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - petscape-net
+
+  # ─── Spring Boot API ────────────────────────────────────────────────────────
+  api:
+    build:
+      context: ./Petscape-Java
+      dockerfile: Dockerfile
+    container_name: petscape-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"       # Exposed for direct API testing (e.g. Swagger UI)
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      # Database
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: petscape
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${DB_PASSWORD}
+      # JWT
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-900000}
+      REFRESH_TOKEN_EXPIRATION_DAYS: ${REFRESH_TOKEN_EXPIRATION_DAYS:-7}
+      # Stripe
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_SUCCESS_URL: ${STRIPE_SUCCESS_URL:-http://localhost/donate/success}
+      STRIPE_CANCEL_URL: ${STRIPE_CANCEL_URL:-http://localhost/donate/cancel}
+      # Email
+      MAIL_HOST: ${MAIL_HOST:-smtp.gmail.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      # App
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost}
+      CORS_ALLOWED_ORIGINS: http://localhost,http://frontend
+      SPRING_PROFILES_ACTIVE: docker
+    volumes:
+      - petscape-uploads:/app/uploads
+    networks:
+      - petscape-net
+
+  # ─── Angular Frontend (Nginx) ───────────────────────────────────────────────
+  frontend:
+    build:
+      context: ./PetScape-Angular
+      dockerfile: Dockerfile
+    container_name: petscape-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"           # App available at http://localhost
+    depends_on:
+      - api
+    networks:
+      - petscape-net
+
+volumes:
+  petscape-db-data:
+  petscape-uploads:
+
+networks:
+  petscape-net:
+    driver: bridge
