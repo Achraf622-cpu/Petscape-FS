@@ -1,0 +1,134 @@
+package com.petscape.service;
+
+import com.petscape.dto.AuthResponse;
+import com.petscape.dto.LoginRequest;
+import com.petscape.dto.RegisterRequest;
+import com.petscape.entity.User;
+import com.petscape.entity.User.Role;
+import com.petscape.exception.BadRequestException;
+import com.petscape.repository.UserRepository;
+import com.petscape.security.JwtUtil;
+import com.petscape.service.impl.AuthServiceImpl;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+@DisplayName("AuthServiceImpl Unit Tests")
+class AuthServiceImplTest {
+
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private PasswordEncoder passwordEncoder;
+    @Mock
+    private JwtUtil jwtUtil;
+    @Mock
+    private AuthenticationManager authenticationManager;
+    @Mock
+    private JavaMailSender mailSender;
+
+    @InjectMocks
+    private AuthServiceImpl authService;
+
+    @BeforeEach
+    void setUp() {
+        ReflectionTestUtils.setField(authService, "baseUrl", "http://localhost:8080");
+    }
+
+    @Test
+    @DisplayName("register() — happy path creates user and returns token")
+    void register_success() {
+        // Arrange
+        RegisterRequest req = new RegisterRequest();
+        req.setFirstname("John");
+        req.setLastname("Doe");
+        req.setEmail("john@example.com");
+        req.setPassword("secret123");
+        req.setPasswordConfirmation("secret123");
+
+        when(userRepository.existsByEmail("john@example.com")).thenReturn(false);
+        when(passwordEncoder.encode("secret123")).thenReturn("$hashed$");
+        User saved = User.builder().id(1L).email("john@example.com")
+                .firstname("John").lastname("Doe").role(Role.USER).build();
+        when(userRepository.save(any(User.class))).thenReturn(saved);
+        when(jwtUtil.generateToken(any(User.class))).thenReturn("jwt-token");
+
+        // Act
+        AuthResponse response = authService.register(req);
+
+        // Assert
+        assertThat(response.getToken()).isEqualTo("jwt-token");
+        assertThat(response.getEmail()).isEqualTo("john@example.com");
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    @DisplayName("register() — duplicate email throws BadRequestException")
+    void register_duplicateEmail_throwsBadRequest() {
+        RegisterRequest req = new RegisterRequest();
+        req.setEmail("taken@example.com");
+        req.setPassword("pass");
+        req.setPasswordConfirmation("pass");
+        when(userRepository.existsByEmail("taken@example.com")).thenReturn(true);
+
+        assertThatThrownBy(() -> authService.register(req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Email already in use");
+    }
+
+    @Test
+    @DisplayName("register() — password mismatch throws BadRequestException")
+    void register_passwordMismatch_throwsBadRequest() {
+        RegisterRequest req = new RegisterRequest();
+        req.setEmail("new@example.com");
+        req.setPassword("pass1");
+        req.setPasswordConfirmation("pass2");
+
+        assertThatThrownBy(() -> authService.register(req))
+                .isInstanceOf(BadRequestException.class)
+                .hasMessageContaining("Passwords do not match");
+    }
+
+    @Test
+    @DisplayName("login() — valid credentials return token")
+    void login_success() {
+        LoginRequest req = new LoginRequest();
+        req.setEmail("john@example.com");
+        req.setPassword("secret123");
+        User user = User.builder().id(1L).email("john@example.com")
+                .firstname("John").lastname("Doe").role(Role.USER).build();
+
+        Authentication auth = mock(Authentication.class);
+        when(auth.getPrincipal()).thenReturn(user);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
+        when(jwtUtil.generateToken(user)).thenReturn("jwt-token");
+
+        AuthResponse response = authService.login(req);
+        assertThat(response.getToken()).isEqualTo("jwt-token");
+    }
+
+    @Test
+    @DisplayName("verifyEmail() — invalid token throws ResourceNotFoundException")
+    void verifyEmail_invalidToken_throws() {
+        when(userRepository.findByEmailVerificationToken("bad-token")).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> authService.verifyEmail("bad-token"))
+                .isInstanceOf(com.petscape.exception.ResourceNotFoundException.class);
+    }
+}
