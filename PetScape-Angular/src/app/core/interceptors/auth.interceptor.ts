@@ -1,34 +1,34 @@
-import { inject } from '@angular/core';
+import { inject, Injector, runInInjectionContext } from '@angular/core';
 import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
 import { throwError, BehaviorSubject, Observable, from } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 
+
 let isRefreshing = false;
 const refreshSubject = new BehaviorSubject<string | null>(null);
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+  const injector = inject(Injector);
 
-  // Wait for the initial token refresh (on page reload) before sending any request.
-  // Once auth.ready has resolved, this is a no-op (resolved promise emits synchronously).
-  return from(authService.ready).pipe(
-    switchMap(() => {
-      const token = authService.getToken();
-      const authReq = token ? addToken(req, token) : req;
+  return runInInjectionContext(injector, () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
 
-      return next(authReq).pipe(
-        catchError((err: HttpErrorResponse) => {
-          if (err.status === 401 && !req.url.includes('/auth/')) {
-            return handle401(req, next, authService, router);
-          }
-          return throwError(() => err);
-        })
-      );
-    })
-  );
+    const token = authService.getToken();
+    const authReq = token ? addToken(req, token) : req;
+
+    return next(authReq).pipe(
+      catchError((err: HttpErrorResponse) => {
+        console.log('[INTERCEPTOR] HTTP Error:', err.status, 'for URL:', req.url);
+        if (err.status === 401) {
+          return handle401(req, next, authService, router);
+        }
+        return throwError(() => err);
+      })
+    );
+  });
 };
 
 function addToken(req: HttpRequest<unknown>, token: string): HttpRequest<unknown> {
