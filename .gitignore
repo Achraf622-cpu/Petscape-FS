@@ -1,0 +1,42 @@
+# ─── PetsCape Root .gitignore ───────────────────────────────────────────────
+
+# Environment secrets \xE2\x80\x94 NEVER commit this
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ─── Java / Spring Boot ─────────────────────────────────────────────────────
+Petscape-Java/target/
+Petscape-Java/!.mvn/wrapper/maven-wrapper.jar
+Petscape-Java/log/
+Petscape-Java/logs/
+Petscape-Java/**/*.log
+Petscape-Java/.classpath
+Petscape-Java/.project
+Petscape-Java/.settings/
+Petscape-Java/.idea/
+Petscape-Java/*.iml
+
+# ─── Angular / Node ────────────────────────────────────────────────────────
+PetScape-Angular/node_modules/
+PetScape-Angular/dist/
+PetScape-Angular/bazel-out/
+PetScape-Angular/.pnp
+PetScape-Angular/.pnp.js
+PetScape-Angular/coverage/
+PetScape-Angular/.angular/
+PetScape-Angular/.idea/
+PetScape-Angular/.vscode/
+PetScape-Angular/*.log
+
+# Global workspace IDE settings
+.vscode/
+.idea/
