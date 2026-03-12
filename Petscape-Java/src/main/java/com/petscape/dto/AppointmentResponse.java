@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+@lombok.AllArgsConstructor
+@lombok.NoArgsConstructor
 public class AppointmentResponse {
     private Long id;
     private Long userId;

@@ -47,7 +47,7 @@ export interface AnimalResponse {
   gender: 'MALE' | 'FEMALE';
   description: string;
   status: 'AVAILABLE' | 'RESERVED' | 'ADOPTED';
-  image: string | null;
+  images: string[];
   speciesId: number;
   speciesName: string;
   createdAt: string;
@@ -89,8 +89,7 @@ export interface AppointmentResponse {
   userFullName: string;
   animalId: number;
   animalName: string;
-  date: string;
-  timeSlot: string;
+  dateTime: string;
   status: 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED';
   notes: string;
   createdAt: string;

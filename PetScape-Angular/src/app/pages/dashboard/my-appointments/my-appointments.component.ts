@@ -18,7 +18,7 @@ import { DatePipe } from '@angular/common';
         <div class="cards-list">
           @for (i of [1,2,3]; track i) { <div class="skeleton" style="height:90px;border-radius:0.75rem;"></div> }
         </div>
-      } @else if (page().content.length === 0) {
+      } @else if (page().content?.length === 0) {
         <div class="empty-state">
           <i class="bi bi-calendar-x"></i>
           <h3>No appointments yet</h3>
@@ -29,12 +29,12 @@ import { DatePipe } from '@angular/common';
           @for (appt of page().content; track appt.id) {
             <div class="appt-card glass-card">
               <div class="appt-date-block">
-                <div class="appt-month">{{ appt.date | date:'MMM' }}</div>
-                <div class="appt-day">{{ appt.date | date:'d' }}</div>
+                <div class="appt-month">{{ appt.dateTime | date:'MMM' }}</div>
+                <div class="appt-day">{{ appt.dateTime | date:'d' }}</div>
               </div>
               <div class="appt-info">
                 <h4>Visit with <strong>{{ appt.animalName }}</strong></h4>
-                <p><i class="bi bi-clock"></i> {{ appt.timeSlot }}</p>
+                <p><i class="bi bi-clock"></i> {{ appt.dateTime | date:'shortTime' }}</p>
                 @if (appt.notes) { <p class="text-muted-custom">{{ appt.notes }}</p> }
               </div>
               <div class="appt-actions">

@@ -18,7 +18,7 @@ public class AnimalResponse {
     private Integer age;
     private String description;
     private AnimalStatus status;
-    private String image;
+    private java.util.List<String> images;
     private String location;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")

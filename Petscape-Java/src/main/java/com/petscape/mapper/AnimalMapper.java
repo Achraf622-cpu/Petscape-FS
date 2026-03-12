@@ -14,7 +14,7 @@ public interface AnimalMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "species", ignore = true)
-    @Mapping(target = "image", ignore = true)
+    @Mapping(target = "images", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "adoptionRequests", ignore = true)
@@ -24,7 +24,7 @@ public interface AnimalMapper {
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "species", ignore = true)
-    @Mapping(target = "image", ignore = true)
+    @Mapping(target = "images", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "adoptionRequests", ignore = true)

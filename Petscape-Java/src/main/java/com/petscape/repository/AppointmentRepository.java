@@ -13,7 +13,7 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
-    List<Appointment> findByUserId(Long userId);
+    Page<Appointment> findByUserId(Long userId, Pageable pageable);
 
     Page<Appointment> findAll(Pageable pageable);
 

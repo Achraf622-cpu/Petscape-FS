@@ -40,9 +40,10 @@ public class AppointmentController {
 
     @GetMapping("/my")
     @Operation(summary = "Get all of the current user's appointments")
-    public ResponseEntity<List<AppointmentResponse>> myAppointments(
-            @AuthenticationPrincipal User currentUser) {
-        return ResponseEntity.ok(appointmentService.getMyAppointments(currentUser.getId()));
+    public ResponseEntity<org.springframework.data.domain.Page<AppointmentResponse>> myAppointments(
+            @AuthenticationPrincipal User currentUser,
+            org.springframework.data.domain.Pageable pageable) {
+        return ResponseEntity.ok(appointmentService.getMyAppointments(currentUser.getId(), pageable));
     }
 
     @PatchMapping("/{id}/status")

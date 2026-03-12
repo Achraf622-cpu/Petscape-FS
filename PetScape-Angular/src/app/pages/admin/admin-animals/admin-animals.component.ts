@@ -69,14 +69,47 @@ import { FormsModule } from '@angular/forms';
                         placeholder="Describe the animal..."></textarea>
             </div>
             <div class="field full-width">
-              <label>Photo</label>
-              <div class="file-upload">
-                <input type="file" accept="image/*" (change)="onFileChange($event)" id="animalImage" />
-                <label for="animalImage" class="file-label">
-                  <i class="bi bi-cloud-arrow-up"></i>
-                  {{ selectedFileName() || 'Choose image...' }}
-                </label>
+              <label>Photos (up to 10 images — JPG, PNG, WEBP, GIF)</label>
+              
+              <div class="drop-zone" 
+                   [class.drag-over]="isDragOver()"
+                   (dragover)="onDragOver($event)" 
+                   (dragleave)="onDragLeave($event)" 
+                   (drop)="onDrop($event)"
+                   (click)="fileInput.click()">
+                <div class="drop-content">
+                  <i class="bi bi-cloud-arrow-up drop-icon"></i>
+                  <p class="drop-text">Click to browse or drag & drop photos here</p>
+                  <span class="drop-hint">You can add multiple files incrementally. Max 10.</span>
+                </div>
+                <!-- Hidden input -->
+                <input type="file" #fileInput id="animalImages" accept="image/*" multiple (change)="onFileSelected($event)" hidden />
               </div>
+
+              @if (selectedPreviews().length > 0) {
+                <div class="thumbnail-grid mt-3">
+                  @for (p of selectedPreviews(); track $index) {
+                    <div class="thumb-card">
+                      <img [src]="p" alt="preview" />
+                      <button type="button" class="btn-remove" (click)="removeNewImage($index, $event)"><i class="bi bi-x"></i></button>
+                    </div>
+                  }
+                </div>
+              }
+
+              @if (editing() && existingImages().length > 0) {
+                <div class="existing-section mt-4 pt-3" style="border-top:1px solid rgba(255,255,255,0.05);">
+                  <h6 class="text-muted-custom mb-3" style="font-size:0.9rem;"><i class="bi bi-images me-2"></i>Existing Photos (will be kept unless removed)</h6>
+                  <div class="thumbnail-grid" style="margin-top:0;">
+                    @for (img of existingImages(); track $index) {
+                      <div class="thumb-card existing-thumb">
+                        <img [src]="animalService.imageUrl(img)" alt="existing" />
+                        <button type="button" class="btn-remove" (click)="removeExistingImage($index, $event)"><i class="bi bi-x"></i></button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
             </div>
             <div class="form-actions">
               <button type="button" class="btn-outline" (click)="closeForm()">Cancel</button>
@@ -106,11 +139,18 @@ import { FormsModule } from '@angular/forms';
                 <tr>
                   <td class="text-muted-custom">{{ a.id }}</td>
                   <td>
-                    @if (a.image) {
-                      <img [src]="animalService.imageUrl(a.image)" class="thumb" [alt]="a.name" />
-                    } @else {
-                      <div class="thumb-placeholder"><i class="bi bi-image"></i></div>
-                    }
+                    <div class="avatar-stack">
+                      @if (a.images && a.images.length > 0) {
+                        @for (img of a.images.slice(0,3); track $index) {
+                          <img [src]="animalService.imageUrl(img)" class="thumb" style="width:40px;height:40px;" [alt]="a.name" />
+                        }
+                        @if (a.images.length > 3) {
+                          <div class="avatar-count">+{{ a.images.length - 3 }}</div>
+                        }
+                      } @else {
+                        <div class="avatar-count" style="margin-left:0; border:none;"><i class="bi bi-image" style="color:#6b7280; font-size:1.1rem;"></i></div>
+                      }
+                    </div>
                   </td>
                   <td><strong>{{ a.name }}</strong></td>
                   <td>{{ a.speciesName }}</td>
@@ -146,8 +186,9 @@ import { FormsModule } from '@angular/forms';
     .page-hdr { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.75rem; margin-bottom:1.25rem; }
 
     /* Thumbnail */
-    .thumb { width:40px; height:40px; border-radius:0.5rem; object-fit:cover; }
-    .thumb-placeholder { width:40px; height:40px; border-radius:0.5rem; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#4b5563; }
+    .thumb { width:44px; height:44px; border-radius:0.5rem; object-fit:cover; }
+    .thumb-placeholder { width:44px; height:44px; border-radius:0.5rem; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; color:#4b5563; }
+    .img-count { font-size:0.7rem; color:#9ca3af; margin-left:4px; vertical-align:middle; }
 
     /* Modal */
     .modal-backdrop { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:100; }
@@ -162,11 +203,23 @@ import { FormsModule } from '@angular/forms';
     .field { display:flex; flex-direction:column; gap:0.3rem; }
     .field label { color:#9ca3af; font-size:0.8rem; font-weight:500; }
     .full-width { margin-bottom:1rem; }
-    .file-upload { position:relative; }
-    .file-upload input[type="file"] { position:absolute; opacity:0; width:0; height:0; }
-    .file-label { display:flex; align-items:center; gap:0.5rem; padding:0.6rem 1rem; background:rgba(31,41,55,0.8); border:1px dashed rgba(255,255,255,0.15); border-radius:0.5rem; color:#9ca3af; font-size:0.85rem; cursor:pointer; transition:border-color 0.2s; }
-    .file-label:hover { border-color:#14b8a6; color:#14b8a6; }
-    .form-actions { display:flex; justify-content:flex-end; gap:0.75rem; margin-top:0.5rem; }
+    /* File Upload Drop Zone */
+    .drop-zone { border:2px dashed rgba(255,255,255,0.15); border-radius:1rem; padding:2.5rem 1rem; text-align:center; background:rgba(31,41,55,0.4); cursor:pointer; transition:all 0.2s ease; margin-bottom:0.5rem; }
+    .drop-zone:hover, .drop-zone.drag-over { border-color:#14b8a6; background:rgba(20,184,166,0.05); }
+    .drop-icon { font-size:2.5rem; color:#9ca3af; margin-bottom:0.5rem; display:inline-block; transition:color 0.2s; }
+    .drop-zone:hover .drop-icon, .drop-zone.drag-over .drop-icon { color:#14b8a6; }
+    .drop-text { color:#f9fafb; font-weight:600; font-size:1.05rem; margin-bottom:0.25rem; }
+    .drop-hint { color:#6b7280; font-size:0.85rem; }
+    
+    .thumbnail-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(100px, 1fr)); gap:1rem; margin-top:1rem; }
+    .thumb-card { position:relative; aspect-ratio:1; border-radius:0.75rem; overflow:hidden; border:2px solid rgba(255,255,255,0.1); background:#111827; }
+    .thumb-card img { width:100%; height:100%; object-fit:cover; }
+    .existing-thumb { border-color: rgba(20,184,166,0.3); }
+    .btn-remove { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; background:rgba(239,68,68,0.9); color:white; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:1.1rem; transition:transform 0.2s; backdrop-filter:blur(4px); }
+    .btn-remove:hover { transform:scale(1.1); background:#ef4444; }
+    .mt-3 { margin-top:1rem; }
+    .existing-note { color:#9ca3af; font-size:0.85rem; margin-top:0.75rem; display:flex; align-items:center; gap:0.4rem; padding:0.75rem; background:rgba(255,255,255,0.03); border-radius:0.5rem; }
+    .form-actions { display:flex; justify-content:flex-end; gap:0.75rem; margin-top:1.5rem; padding-top:1.5rem; border-top:1px solid rgba(255,255,255,0.05); }
 
     /* Table */
     .table-wrap { overflow-x:auto; }
@@ -200,8 +253,10 @@ export class AdminAnimalsComponent implements OnInit {
   editing = signal<number | null>(null);
   saving = signal(false);
   speciesList = signal<SpeciesResponse[]>([]);
-  selectedFileName = signal('');
-  selectedFile: File | null = null;
+  selectedFiles = signal<File[]>([]);
+  selectedPreviews = signal<string[]>([]);
+  existingImages = signal<string[]>([]);
+  isDragOver = signal(false);
 
   form = {
     name: '',
@@ -226,6 +281,82 @@ export class AdminAnimalsComponent implements OnInit {
     });
   }
 
+  // --- File Upload & Drag-and-Drop ---
+  onDragOver(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver.set(true);
+  }
+
+  onDragLeave(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver.set(false);
+  }
+
+  onDrop(event: DragEvent) {
+    event.preventDefault();
+    this.isDragOver.set(false);
+    if (event.dataTransfer?.files) {
+      this.handleFiles(Array.from(event.dataTransfer.files));
+    }
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files) {
+      this.handleFiles(Array.from(input.files));
+    }
+    input.value = ''; // Reset so same file can be selected again if needed
+  }
+
+  private handleFiles(files: File[]) {
+    const maxFiles = 10;
+    const currentCount = this.selectedFiles().length;
+    let newFiles = files.filter(f => f.type.startsWith('image/'));
+    
+    if (currentCount + newFiles.length > maxFiles) {
+      this.toast.warning('Limit Reached', `You can only upload up to ${maxFiles} images.`);
+      newFiles = newFiles.slice(0, maxFiles - currentCount);
+    }
+    
+    if (newFiles.length === 0) return;
+
+    this.selectedFiles.update(curr => [...curr, ...newFiles]);
+    
+    // Generate previews
+    newFiles.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.selectedPreviews.update(curr => [...curr, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  removeNewImage(index: number, event: Event) {
+    event.stopPropagation();
+    this.selectedFiles.update(curr => {
+      const copy = [...curr];
+      copy.splice(index, 1);
+      return copy;
+    });
+    this.selectedPreviews.update(curr => {
+      const copy = [...curr];
+      copy.splice(index, 1);
+      return copy;
+    });
+  }
+  // ------------------------------------
+
+  removeExistingImage(index: number, event: Event) {
+    event.stopPropagation();
+    this.existingImages.update(curr => {
+      const copy = [...curr];
+      copy.splice(index, 1);
+      return copy;
+    });
+  }
+  // ------------------------------------
+
   openCreate() {
     this.resetForm();
     this.editing.set(null);
@@ -240,10 +371,11 @@ export class AdminAnimalsComponent implements OnInit {
       age: animal.age,
       description: animal.description,
       status: animal.status,
-      location: ''  // location not in AnimalResponse, leave empty
+      location: ''
     };
-    this.selectedFile = null;
-    this.selectedFileName.set('');
+    this.selectedFiles.set([]);
+    this.selectedPreviews.set([]);
+    this.existingImages.set(animal.images || []);
     this.editing.set(animal.id);
     this.showForm.set(true);
   }
@@ -253,17 +385,9 @@ export class AdminAnimalsComponent implements OnInit {
     this.editing.set(null);
   }
 
-  onFileChange(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files[0]) {
-      this.selectedFile = input.files[0];
-      this.selectedFileName.set(this.selectedFile.name);
-    }
-  }
-
   submitForm() {
-    if (!this.form.name || !this.form.speciesId || !this.form.breed || !this.form.description || !this.form.status) {
-      this.toast.error('Validation', 'Please fill in all required fields.');
+    if (!this.form.name || !this.form.speciesId || !this.form.breed || !this.form.description || !this.form.status || this.form.age === null) {
+      this.toast.error('Validation', 'Please fill in all required fields (including age).');
       return;
     }
 
@@ -276,9 +400,12 @@ export class AdminAnimalsComponent implements OnInit {
     fd.append('description', this.form.description);
     fd.append('status', this.form.status);
     fd.append('location', this.form.location || 'N/A');
-    if (this.selectedFile) {
-      fd.append('image', this.selectedFile);
-    }
+    
+    // Append existing images that are kept
+    this.existingImages().forEach(img => fd.append('existingImages', img));
+
+    // Append each selected file under the 'images' key
+    this.selectedFiles().forEach(f => fd.append('images', f));
 
     const editId = this.editing();
     const obs$ = editId
@@ -294,7 +421,9 @@ export class AdminAnimalsComponent implements OnInit {
       },
       error: (e) => {
         this.saving.set(false);
-        this.toast.error('Error', e.error?.message || 'Could not save animal.');
+        console.error('[ADMIN ANIMALS] Save Error:', e);
+        const msg = e.error?.message || (e.error?.errors ? Object.values(e.error.errors).join(', ') : 'Could not save animal.');
+        this.toast.error('Error', msg);
       }
     });
   }
@@ -310,7 +439,7 @@ export class AdminAnimalsComponent implements OnInit {
 
   private resetForm() {
     this.form = { name: '', speciesId: '', breed: '', age: 0, description: '', status: 'AVAILABLE', location: '' };
-    this.selectedFile = null;
-    this.selectedFileName.set('');
+    this.selectedFiles.set([]);
+    this.selectedPreviews.set([]);
   }
 }

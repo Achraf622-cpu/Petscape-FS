@@ -14,6 +14,7 @@ import com.petscape.service.IAnimalService;
 import com.petscape.service.IFileStorageService;
 import com.petscape.specification.AnimalSpecifications;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -54,8 +55,11 @@ public class AnimalServiceImpl implements IAnimalService {
         Species species = findSpecies(request.getSpeciesId());
         Animal animal = animalMapper.toEntity(request);
         animal.setSpecies(species);
-        if (request.getImage() != null && !request.getImage().isEmpty()) {
-            animal.setImage(fileStorageService.store(request.getImage(), "animals"));
+        if (request.getImages() != null) {
+            request.getImages().stream()
+                .filter(f -> f != null && !f.isEmpty())
+                .map(f -> fileStorageService.store(f, "animals"))
+                .forEach(animal.getImages()::add);
         }
         return animalMapper.toResponse(animalRepository.save(animal));
     }
@@ -68,10 +72,36 @@ public class AnimalServiceImpl implements IAnimalService {
         Species species = findSpecies(request.getSpeciesId());
         animalMapper.updateEntityFromRequest(request, animal);
         animal.setSpecies(species);
-        if (request.getImage() != null && !request.getImage().isEmpty()) {
-            if (animal.getImage() != null)
-                fileStorageService.delete(animal.getImage());
-            animal.setImage(fileStorageService.store(request.getImage(), "animals"));
+        
+        // Handle existing images deletion
+        if (request.getExistingImages() != null) {
+            List<String> imagesToKeep = request.getExistingImages();
+            
+            // Find images that are currently in the animal but not in the keep list
+            List<String> imagesToDelete = animal.getImages().stream()
+                .filter(img -> !imagesToKeep.contains(img))
+                .toList();
+                
+            // Delete them from storage
+            imagesToDelete.forEach(fileStorageService::delete);
+            
+            // Retain only the ones to keep
+            animal.getImages().retainAll(imagesToKeep);
+        } else {
+            // If existingImages is explicitly null (not empty), it might mean the frontend didn't send them,
+            // or wants to clear them all. To be safe, if we get an empty list, we clear; if null, we could assume clear.
+            // Let's assume if it's missing (null), we clear all old images (depends on frontend sending empty array).
+            // Actually, better to just clear all if it's null to be consistent.
+            animal.getImages().forEach(fileStorageService::delete);
+            animal.getImages().clear();
+        }
+
+        // Append new images to the list
+        if (request.getImages() != null) {
+            request.getImages().stream()
+                .filter(f -> f != null && !f.isEmpty())
+                .map(f -> fileStorageService.store(f, "animals"))
+                .forEach(animal.getImages()::add);
         }
         return animalMapper.toResponse(animalRepository.save(animal));
     }
@@ -81,8 +111,7 @@ public class AnimalServiceImpl implements IAnimalService {
     @Auditable(action = "DELETE_ANIMAL", entityType = "Animal")
     public void delete(Long id) {
         Animal animal = findById(id);
-        if (animal.getImage() != null)
-            fileStorageService.delete(animal.getImage());
+        animal.getImages().forEach(fileStorageService::delete);
         animalRepository.delete(animal);
     }
 

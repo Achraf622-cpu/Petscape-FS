@@ -4,6 +4,7 @@ import com.petscape.entity.Animal.AnimalStatus;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 @Data
 public class AnimalRequest {
@@ -30,5 +31,7 @@ public class AnimalRequest {
     @NotBlank(message = "Location is required")
     private String location;
 
-    private MultipartFile image;
+    private List<String> existingImages;
+
+    private List<MultipartFile> images;
 }

@@ -59,13 +59,42 @@ public class GlobalExceptionHandler {
 
     // ─── Bean Validation ──────────────────────────────────────────────────────
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+    @ExceptionHandler(org.springframework.web.method.annotation.HandlerMethodValidationException.class)
+    public ResponseEntity<ApiError> handleHandlerMethodValidation(org.springframework.web.method.annotation.HandlerMethodValidationException ex) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
-        ex.getBindingResult().getAllErrors().forEach(err -> {
-            String field = ((FieldError) err).getField();
+        ex.getAllValidationResults().forEach(result -> {
+            result.getResolvableErrors().forEach(err -> {
+                if (err instanceof FieldError fieldError) {
+                    fieldErrors.put(fieldError.getField(), err.getDefaultMessage());
+                } else {
+                    fieldErrors.put(result.getMethodParameter().getParameterName(), err.getDefaultMessage());
+                }
+            });
+        });
+        ApiError body = new ApiError(
+                HttpStatus.UNPROCESSABLE_ENTITY.value(),
+                "Validation failed",
+                LocalDateTime.now(),
+                fieldErrors);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(body);
+    }
+
+    @ExceptionHandler({MethodArgumentNotValidException.class, org.springframework.validation.BindException.class})
+    public ResponseEntity<ApiError> handleValidation(Exception ex) {
+        Map<String, String> fieldErrors = new LinkedHashMap<>();
+        org.springframework.validation.BindingResult bindingResult;
+        
+        if (ex instanceof MethodArgumentNotValidException) {
+            bindingResult = ((MethodArgumentNotValidException) ex).getBindingResult();
+        } else {
+            bindingResult = ((org.springframework.validation.BindException) ex).getBindingResult();
+        }
+        
+        bindingResult.getAllErrors().forEach(err -> {
+            String field = err instanceof FieldError ? ((FieldError) err).getField() : err.getObjectName();
             fieldErrors.put(field, err.getDefaultMessage());
         });
+        
         ApiError body = new ApiError(
                 HttpStatus.UNPROCESSABLE_ENTITY.value(),
                 "Validation failed",

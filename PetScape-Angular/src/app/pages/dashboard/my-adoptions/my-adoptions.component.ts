@@ -22,7 +22,7 @@ import { DatePipe, SlicePipe } from '@angular/common';
             <div class="skeleton" style="height:100px;border-radius:0.75rem;"></div>
           }
         </div>
-      } @else if (page().content.length === 0) {
+      } @else if (page().content?.length === 0) {
         <div class="empty-state">
           <i class="bi bi-heart"></i>
           <h3>No adoption requests yet</h3>

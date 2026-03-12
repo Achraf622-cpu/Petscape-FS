@@ -90,14 +90,30 @@ import { AnimalResponse, SpeciesResponse, Page } from '../../../models/models';
         } @else {
           <div class="shop-grid">
             @for (animal of page().content; track animal.id) {
-              <a [routerLink]="['/animals', animal.id]" class="product-card">
+              <a [routerLink]="['/animals', animal.id]" class="product-card"
+                 (mouseenter)="startCycle(animal.id, animal.images.length)"
+                 (mouseleave)="stopCycle(animal.id)">
                 <div class="product-img-wrap">
-                  @if (animal.image) {
-                    <img [src]="animalService.imageUrl(animal.image)" [alt]="animal.name" class="product-img" />
+                  @if (animal.images && animal.images.length > 0) {
+                    @for (img of animal.images; track $index) {
+                      <img
+                        [src]="animalService.imageUrl(img)"
+                        [alt]="animal.name"
+                        class="product-img"
+                        [class.active]="($index) === (activeIdx[animal.id] ?? 0)"
+                      />
+                    }
                   } @else {
                     <div class="no-img"><i class="bi bi-camera"></i></div>
                   }
                   <span class="status-badge shadow-sm" [class]="'badge-' + animal.status.toLowerCase()">{{ animal.status }}</span>
+                  @if (animal.images && animal.images.length > 1) {
+                    <div class="img-dots">
+                      @for (img of animal.images; track $index) {
+                        <span class="img-dot" [class.active-dot]="$index === (activeIdx[animal.id] ?? 0)"></span>
+                      }
+                    </div>
+                  }
                   <div class="hover-overlay">
                     <button class="btn-quick-view">View Details <i class="bi bi-arrow-right"></i></button>
                   </div>
@@ -169,9 +185,13 @@ import { AnimalResponse, SpeciesResponse, Page } from '../../../models/models';
     .product-card:hover { transform:translateY(-8px); box-shadow:0 20px 40px -10px rgba(0,0,0,0.5); border-color:rgba(20,184,166,0.3); }
     
     .product-img-wrap { position:relative; height:240px; overflow:hidden; background:#111827; }
-    .product-img { width:100%; height:100%; object-fit:cover; transition:transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-    .product-card:hover .product-img { transform:scale(1.08); }
+    .product-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; transition:opacity 0.6s ease; }
+    .product-img.active { opacity:1; }
+    .product-card:hover .product-img.active { transform:scale(1.04); transition:opacity 0.6s ease, transform 0.6s ease; }
     .no-img { height:100%; display:flex; align-items:center; justify-content:center; font-size:3rem; color:#374151; background:rgba(255,255,255,0.02); }
+    .img-dots { position:absolute; bottom:0.6rem; left:50%; transform:translateX(-50%); display:flex; gap:4px; z-index:3; }
+    .img-dot { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,0.4); transition:all 0.3s; }
+    .img-dot.active-dot { background:white; width:18px; border-radius:3px; }
     
     .status-badge { position:absolute; top:1rem; left:1rem; padding:0.3rem 0.8rem; border-radius:999px; font-size:0.75rem; font-weight:700; z-index:2; backdrop-filter:blur(4px); letter-spacing:0.02em; }
     .badge-available { background:rgba(20,184,166,0.9); color:white; }
@@ -253,4 +273,22 @@ export class AnimalsListComponent implements OnInit {
   onFilterChange() { this.loadPage(0); }
   goToPage(p: number) { this.loadPage(p); window.scrollTo({ top: 0, behavior: 'smooth' }); }
   resetFilters() { this.search = ''; this.selectedSpecies = ''; this.selectedStatus = ''; this.loadPage(0); }
+
+  // ── Image cycling ──────────────────────────────────────────────────────────
+  activeIdx: Record<number, number> = {};
+  private cycleTimers: Record<number, ReturnType<typeof setInterval>> = {};
+
+  startCycle(id: number, count: number) {
+    if (count <= 1) return;
+    this.activeIdx[id] = 0;
+    this.cycleTimers[id] = setInterval(() => {
+      this.activeIdx[id] = ((this.activeIdx[id] ?? 0) + 1) % count;
+    }, 2500);
+  }
+
+  stopCycle(id: number) {
+    clearInterval(this.cycleTimers[id]);
+    delete this.cycleTimers[id];
+    this.activeIdx[id] = 0;
+  }
 }

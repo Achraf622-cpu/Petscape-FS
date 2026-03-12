@@ -14,5 +14,5 @@ public interface IAppointmentService {
 
     void cancel(Long id, User currentUser);
 
-    List<AppointmentResponse> getMyAppointments(Long userId);
+    org.springframework.data.domain.Page<AppointmentResponse> getMyAppointments(Long userId, org.springframework.data.domain.Pageable pageable);
 }

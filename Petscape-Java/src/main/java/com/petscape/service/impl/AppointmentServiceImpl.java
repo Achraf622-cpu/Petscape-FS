@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 @Service
 @RequiredArgsConstructor
@@ -91,9 +92,9 @@ public class AppointmentServiceImpl implements IAppointmentService {
     }
 
     @Override
-    public List<AppointmentResponse> getMyAppointments(Long userId) {
-        return appointmentRepository.findByUserId(userId)
-                .stream().map(appointmentMapper::toResponse).toList();
+    public Page<AppointmentResponse> getMyAppointments(Long userId, org.springframework.data.domain.Pageable pageable) {
+        return appointmentRepository.findByUserId(userId, pageable)
+                .map(appointmentMapper::toResponse);
     }
 
     @Scheduled(fixedRate = 3600000)

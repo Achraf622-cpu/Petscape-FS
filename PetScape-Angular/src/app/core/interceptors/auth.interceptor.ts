@@ -12,6 +12,10 @@ const refreshSubject = new BehaviorSubject<string | null>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
 
+   if (req.url.includes('/auth/')) {
+    return next(req);
+  }
+
   return runInInjectionContext(injector, () => {
     const authService = inject(AuthService);
     const router = inject(Router);

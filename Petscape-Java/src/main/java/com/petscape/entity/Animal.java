@@ -3,6 +3,7 @@ package com.petscape.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,7 +39,11 @@ public class Animal {
     @Builder.Default
     private AnimalStatus status = AnimalStatus.AVAILABLE;
 
-    private String image;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "animal_images", joinColumns = @JoinColumn(name = "animal_id"))
+    @Column(name = "image_url")
+    @Builder.Default
+    private List<String> images = new ArrayList<>();
 
     @Column(nullable = false)
     private String location;

@@ -26,8 +26,8 @@ import { DatePipe } from '@angular/common';
                   <td class="text-muted-custom">{{ a.id }}</td>
                   <td>{{ a.userFullName }}</td>
                   <td><strong>{{ a.animalName }}</strong></td>
-                  <td>{{ a.date | date:'MMM d, y' }}</td>
-                  <td>{{ a.timeSlot }}</td>
+                  <td>{{ a.dateTime | date:'MMM d, y' }}</td>
+                  <td>{{ a.dateTime | date:'shortTime' }}</td>
                   <td><span class="status-badge" [class]="'badge-' + a.status.toLowerCase()">{{ a.status }}</span></td>
                   <td>
                     @if (a.status === 'PENDING') {

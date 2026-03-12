@@ -63,7 +63,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/species/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/species/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/species/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/api/animals/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/animals", "/api/animals/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/animals/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/animals/**").hasRole("ADMIN")
                         // Any authenticated user

@@ -1,6 +1,6 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, tap, map } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Notification } from '../../models/models';
 
@@ -12,7 +12,9 @@ export class NotificationService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Notification[]> {
-    return this.http.get<Notification[]>(this.base);
+    return this.http.get<{ content: Notification[] }>(this.base).pipe(
+      map(res => res.content)
+    );
   }
 
   getUnreadCount(): Observable<{ count: number }> {

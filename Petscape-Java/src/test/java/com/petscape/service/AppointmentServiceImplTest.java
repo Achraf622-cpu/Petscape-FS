@@ -17,9 +17,16 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -64,6 +71,25 @@ class AppointmentServiceImplTest {
         AppointmentResponse result = appointmentService.book(req, user);
         assertThat(result.getId()).isEqualTo(1L);
         verify(appointmentRepository).save(any(Appointment.class));
+    }
+
+    @Test
+    @DisplayName("getMyAppointments() — returns appointments for a user")
+    void getMyAppointments_success() {
+        User user = makeUser(1L);
+        Appointment appointment = new Appointment();
+        appointment.setId(1L);
+        appointment.setUser(user);
+
+        Page<Appointment> page = new PageImpl<>(List.of(appointment));
+        when(appointmentRepository.findByUserId(eq(user.getId()), any(Pageable.class))).thenReturn(page);
+        when(appointmentMapper.toResponse(any(Appointment.class))).thenReturn(new AppointmentResponse());
+
+        Page<AppointmentResponse> responses = appointmentService.getMyAppointments(user.getId(), PageRequest.of(0, 10));
+
+        assertNotNull(responses);
+        assertEquals(1, responses.getContent().size());
+        verify(appointmentRepository).findByUserId(eq(user.getId()), any(Pageable.class));
     }
 
     @Test

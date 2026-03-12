@@ -71,6 +71,8 @@ services:
       - "80:80"           # App available at http://localhost
     depends_on:
       - api
+    volumes:
+      - petscape-uploads:/app/uploads
     networks:
       - petscape-net
 

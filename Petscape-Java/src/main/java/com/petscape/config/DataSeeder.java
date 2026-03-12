@@ -56,8 +56,7 @@ public class DataSeeder {
         List<Species> species = List.of(
                 Species.builder().name("Dog").description("Domestic dogs of all breeds").build(),
                 Species.builder().name("Cat").description("Domestic cats of all breeds").build(),
-                Species.builder().name("Bird").description("Pet birds including parrots, canaries, and finches")
-                        .build(),
+                Species.builder().name("Bird").description("Pet birds including parrots, canaries, and finches").build(),
                 Species.builder().name("Rabbit").description("Domestic rabbits").build(),
                 Species.builder().name("Hamster").description("Small rodent pets").build(),
                 Species.builder().name("Fish").description("Aquarium and ornamental fish").build(),

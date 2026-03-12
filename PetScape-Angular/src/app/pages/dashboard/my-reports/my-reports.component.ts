@@ -22,7 +22,7 @@ import { RouterLink } from '@angular/router';
 
       @if (loading()) {
         <div class="cards-list">@for(i of [1,2,3]; track i){<div class="skeleton" style="height:80px;border-radius:0.75rem;"></div>}</div>
-      } @else if (page().content.length === 0) {
+      } @else if (page().content?.length === 0) {
         <div class="empty-state">
           <i class="bi bi-megaphone"></i>
           <h3>No reports yet</h3>

@@ -92,8 +92,8 @@ import { AnimalResponse, AnimalReportResponse } from '../../models/models';
             @for (animal of featuredAnimals(); track animal.id) {
               <a [routerLink]="['/animals', animal.id]" class="animal-card">
                 <div class="animal-img">
-                  @if (animal.image) {
-                    <img [src]="animalService.imageUrl(animal.image)" [alt]="animal.name" />
+                  @if (animal.images && animal.images.length > 0) {
+                    <img [src]="animalService.imageUrl(animal.images[0])" [alt]="animal.name" />
                   } @else {
                     <div class="no-img"><i class="bi bi-heart-fill"></i></div>
                   }

@@ -123,11 +123,11 @@ class AnimalServiceImplTest {
     }
 
     @Test
-    @DisplayName("delete() — deletes animal and its image")
+    @DisplayName("delete() — deletes animal and its images")
     void delete_success() {
         Animal animal = new Animal();
         animal.setId(1L);
-        animal.setImage("animals/img.jpg");
+        animal.getImages().add("animals/img.jpg");
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
 
         animalService.delete(1L);
