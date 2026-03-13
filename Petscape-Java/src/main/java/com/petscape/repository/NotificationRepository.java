@@ -11,9 +11,10 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    // Use nested property path "user.id" — Spring Data derives this correctly
+    Page<Notification> findByUser_IdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
-    long countByUserIdAndReadFalse(Long userId);
+    long countByUser_IdAndReadFalse(Long userId);
 
     @Modifying
     @Query("UPDATE Notification n SET n.read = true WHERE n.user.id = :userId AND n.read = false")

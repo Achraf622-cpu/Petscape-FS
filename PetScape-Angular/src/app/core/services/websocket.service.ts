@@ -10,17 +10,6 @@ export interface WsNotification {
   read: boolean;
 }
 
-/**
- * WebSocket service using pure @stomp/stompjs with native WebSocket.
- *
- * NO sockjs-client dependency — sockjs-client is a CommonJS/Node.js
- * library that crashes in Angular production builds due to `global` being
- * undefined in the browser. We connect directly to the Spring STOMP
- * endpoint via native WebSocket (supported by all modern browsers).
- *
- * Spring Boot's STOMP endpoint accepts both native WebSocket connections
- * AND SockJS connections — we simply use the native path.
- */
 @Injectable({ providedIn: 'root' })
 export class WebSocketService {
   // Reactive Angular Signals — consumed by NavbarComponent
@@ -34,9 +23,7 @@ export class WebSocketService {
   connect(token: string): void {
     if (this.client?.active) return; // already connected
 
-    // Build native WebSocket URL from the API base URL
-    // e.g. http://localhost:4200/api  →  ws://localhost:4200/ws
-    //      http://localhost/api       →  ws://localhost/ws
+
     const apiBase = environment.apiUrl; // e.g. '/api' or 'http://localhost:8080/api'
     let wsUrl: string;
     if (apiBase.startsWith('http')) {

@@ -39,7 +39,7 @@ import { WebSocketService } from '../../core/services/websocket.service';
         <div class="nav-right">
           @if (isLoggedIn()) {
             <!-- Notifications bell with live WebSocket badge -->
-            <a routerLink="/dashboard/notifications" class="notif-btn" (click)="wsSvc.clearUnread()">
+            <a routerLink="/dashboard/notifications" class="notif-btn">
               <i class="bi bi-bell-fill" [class.bell-pulse]="wsCount() > 0"></i>
               @if (totalUnread() > 0) {
                 <span class="notif-badge" [class.ws-badge]="wsCount() > 0">{{ totalUnread() > 9 ? '9+' : totalUnread() }}</span>

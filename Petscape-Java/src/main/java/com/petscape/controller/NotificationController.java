@@ -31,6 +31,9 @@ public class NotificationController {
             @AuthenticationPrincipal User user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
         Pageable pageable = PageRequest.of(page, size);
         return ResponseEntity.ok(notificationService.getForUser(user.getId(), pageable));
     }
@@ -38,6 +41,9 @@ public class NotificationController {
     @GetMapping("/count")
     @Operation(summary = "Get unread notification count (badge number)")
     public ResponseEntity<Map<String, Long>> unreadCount(@AuthenticationPrincipal User user) {
+        if (user == null) {
+            return ResponseEntity.status(401).build();
+        }
         long count = notificationService.getUnreadCount(user.getId());
         return ResponseEntity.ok(Map.of("unread", count));
     }

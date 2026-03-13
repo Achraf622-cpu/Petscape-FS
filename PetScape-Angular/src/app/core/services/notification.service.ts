@@ -17,9 +17,9 @@ export class NotificationService {
     );
   }
 
-  getUnreadCount(): Observable<{ count: number }> {
-    return this.http.get<{ count: number }>(`${this.base}/count`).pipe(
-      tap(res => this.unreadCount.set(res.count))
+  getUnreadCount(): Observable<{ unread: number }> {
+    return this.http.get<{ unread: number }>(`${this.base}/count`).pipe(
+      tap(res => this.unreadCount.set(res.unread))
     );
   }
 

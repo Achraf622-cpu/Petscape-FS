@@ -13,9 +13,11 @@ import com.petscape.exception.ResourceNotFoundException;
 import com.petscape.mapper.AppointmentMapper;
 import com.petscape.repository.AnimalRepository;
 import com.petscape.repository.AppointmentRepository;
+import com.petscape.repository.UserRepository;
 import com.petscape.service.IAppointmentService;
 import com.petscape.service.INotificationService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,12 +30,14 @@ import org.springframework.data.domain.Page;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AppointmentServiceImpl implements IAppointmentService {
 
     private final AppointmentRepository appointmentRepository;
     private final AnimalRepository animalRepository;
     private final AppointmentMapper appointmentMapper;
     private final INotificationService notificationService;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -47,9 +51,33 @@ public class AppointmentServiceImpl implements IAppointmentService {
                 : request.getTimeSlot().trim();
         LocalDateTime dateTime = LocalDateTime.of(date, LocalTime.parse(timeStr));
         Appointment appointment = Appointment.builder()
-                .user(currentUser).animal(animal).dateTime(dateTime)
-                .status(AppointmentStatus.PENDING).notes(request.getNotes()).build();
-        return appointmentMapper.toResponse(appointmentRepository.save(appointment));
+                .user(currentUser)
+                .animal(animal)
+                .dateTime(dateTime)
+                .status(AppointmentStatus.PENDING)
+                .notes(request.getNotes())
+                .build();
+
+        Appointment saved = appointmentRepository.save(appointment);
+        log.debug("Booked appointment {} for user {} and animal {}", saved.getId(), currentUser.getEmail(),
+                animal.getName());
+
+        // Notify all admins that a new appointment request has been created
+        java.util.List<User> admins = userRepository.findByRole(User.Role.ADMIN);
+        String requesterName = currentUser.getFirstname() + " " + currentUser.getLastname();
+        String animalName = animal.getName();
+        String dateLabel = saved.getDateTime().toLocalDate().toString();
+        for (User admin : admins) {
+            // Use existing GENERAL type to avoid database enum mismatches
+            notificationService.createFor(
+                    admin.getId(),
+                    "New appointment request",
+                    requesterName + " requested an appointment to visit " + animalName + " on " + dateLabel + ".",
+                    NotificationType.GENERAL);
+            log.debug("Sent appointment request notification (GENERAL) to admin {}", admin.getEmail());
+        }
+
+        return appointmentMapper.toResponse(saved);
     }
 
     @Override
@@ -69,11 +97,13 @@ public class AppointmentServiceImpl implements IAppointmentService {
                     "Your appointment to visit " + animalName + " on " + appointment.getDateTime().toLocalDate()
                             + " has been confirmed.",
                     NotificationType.APPOINTMENT_CONFIRMED);
+            log.debug("Sent APPOINTMENT_CONFIRMED notification to user {}", appointment.getUser().getEmail());
         } else if (status == AppointmentStatus.CANCELLED) {
             notificationService.createFor(userId,
                     "Appointment Cancelled",
                     "Your appointment to visit " + animalName + " has been cancelled.",
                     NotificationType.APPOINTMENT_CANCELLED);
+            log.debug("Sent APPOINTMENT_CANCELLED notification to user {}", appointment.getUser().getEmail());
         }
 
         return result;
