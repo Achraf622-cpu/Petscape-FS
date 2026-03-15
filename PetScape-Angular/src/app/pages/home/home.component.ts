@@ -165,12 +165,19 @@ import { AnimalResponse, AnimalReportResponse } from '../../models/models';
           <div class="reports-grid">
             @for (report of recentReports(); track report.id) {
               <a [routerLink]="['/reports', report.id]" class="report-card">
-                <div class="report-type" [class]="report.type === 'LOST' ? 'type-lost' : 'type-found'">
-                  <i [class]="report.type === 'LOST' ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'"></i>
-                  {{ report.type }}
+                <div class="report-card-img-wrap">
+                  @if (report.image) {
+                    <img [src]="reportService.imageUrl(report.image)" [alt]="report.speciesName" />
+                  } @else {
+                    <div class="report-no-img"><i class="bi bi-camera"></i></div>
+                  }
+                  <span class="report-type" [class]="!report.isFound ? 'type-lost' : 'type-found'">
+                    <i [class]="!report.isFound ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'"></i>
+                    {{ !report.isFound ? 'LOST' : 'FOUND' }}
+                  </span>
                 </div>
-                <p><strong>{{ report.speciesName }}</strong> — {{ report.location }}</p>
-                <p class="text-muted-custom text-sm">{{ report.description | slice:0:80 }}...</p>
+                <p><strong>{{ report.name || report.speciesName }}</strong> — {{ report.location }}</p>
+                <p class="text-muted-custom text-sm">{{ report.description | slice:0:80 }}{{ (report.description || '').length > 80 ? '...' : '' }}</p>
               </a>
             }
           </div>
@@ -237,9 +244,15 @@ import { AnimalResponse, AnimalReportResponse } from '../../models/models';
     .step-card p { color:#6b7280; font-size:0.875rem; line-height:1.6; }
     /* Reports */
     .reports-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1.25rem; }
-    .report-card { background:rgba(31,41,55,0.6); border:1px solid rgba(255,255,255,0.06); border-radius:0.75rem; padding:1.25rem; text-decoration:none; display:block; transition:all 0.2s; }
+    .report-card { background:rgba(31,41,55,0.6); border:1px solid rgba(255,255,255,0.06); border-radius:0.75rem; overflow:hidden; text-decoration:none; display:block; transition:all 0.2s; }
     .report-card:hover { border-color:rgba(20,184,166,0.3); transform:translateY(-2px); }
-    .report-card p { color:#9ca3af; font-size:0.875rem; margin:0.4rem 0; }
+    .report-card-img-wrap { position:relative; height:140px; overflow:hidden; background:#1f2937; }
+    .report-card-img-wrap img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
+    .report-no-img { height:100%; display:flex; align-items:center; justify-content:center; font-size:2rem; color:#4b5563; }
+    .report-card .report-type { position:absolute; top:0.5rem; left:0.5rem; display:inline-flex; align-items:center; gap:0.4rem; font-size:0.7rem; font-weight:700; padding:0.2rem 0.5rem; border-radius:999px; }
+    .report-card .report-type.type-lost { background:rgba(239,68,68,0.85); color:white; }
+    .report-card .report-type.type-found { background:rgba(16,185,129,0.85); color:white; }
+    .report-card p { color:#9ca3af; font-size:0.875rem; margin:0.4rem 1rem 0.4rem 1rem; }
     .report-type { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:700; padding:0.25rem 0.65rem; border-radius:999px; margin-bottom:0.5rem; }
     .type-lost { background:rgba(239,68,68,0.15); color:#f87171; border:1px solid rgba(239,68,68,0.3); }
     .type-found { background:rgba(16,185,129,0.15); color:#34d399; border:1px solid rgba(16,185,129,0.3); }
@@ -253,7 +266,7 @@ import { AnimalResponse, AnimalReportResponse } from '../../models/models';
 })
 export class HomeComponent implements OnInit {
   readonly animalService = inject(AnimalService);
-  private reportService = inject(ReportService);
+  readonly reportService = inject(ReportService);
 
   loading = signal(true);
   reportsLoading = signal(true);
@@ -273,7 +286,7 @@ export class HomeComponent implements OnInit {
       error: () => this.loading.set(false)
     });
 
-    this.reportService.getAll({ size: 4 }).subscribe({
+    this.reportService.getAll({ size: 4, status: 'PENDING' }).subscribe({
       next: p => {
         this.recentReports.set(p.content);
         this.reportCount.set(p.totalElements);

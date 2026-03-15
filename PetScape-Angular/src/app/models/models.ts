@@ -7,6 +7,8 @@ export interface AuthResponse {
   lastname: string;
   role: 'USER' | 'ADMIN';
   emailVerified?: boolean;
+  /** User id from backend; used e.g. for report ownership checks */
+  id?: number;
 }
 
 export interface LoginRequest {

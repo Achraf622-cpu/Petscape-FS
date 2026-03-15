@@ -44,6 +44,12 @@ L.Icon.Default.mergeOptions({
             <option value="lost">Lost</option>
             <option value="found">Found</option>
           </select>
+          <select class="form-select form-select-sm" [(ngModel)]="filter.status" (change)="applyFilters()">
+            <option value="PENDING">Active only</option>
+            <option value="">All statuses</option>
+            <option value="RESOLVED">Resolved</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
           <select class="form-select form-select-sm" [(ngModel)]="filter.speciesId" (change)="applyFilters()">
             <option value="">All Species</option>
             @for (s of species(); track s.id) { <option [value]="s.id">{{ s.name }}</option> }
@@ -91,7 +97,7 @@ L.Icon.Default.mergeOptions({
               <a class="report-card" [routerLink]="['/reports', r.id]">
                 <div class="card-img-wrap">
                   @if (r.image) {
-                    <img [src]="uploadsUrl + '/reports/' + r.image" [alt]="r.speciesName" />
+                    <img [src]="reportService.imageUrl(r.image)" [alt]="r.speciesName" />
                   } @else {
                     <div class="no-img"><i class="bi bi-image"></i></div>
                   }
@@ -154,7 +160,7 @@ L.Icon.Default.mergeOptions({
     .report-card { display:block; background:rgba(31,41,55,0.7); border:1px solid rgba(255,255,255,0.06); border-radius:0.75rem; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s; text-decoration:none; }
     .report-card:hover { transform:translateY(-4px); box-shadow:0 8px 30px rgba(0,0,0,0.4); }
     .card-img-wrap { position:relative; height:170px; overflow:hidden; background:#1f2937; }
-    .card-img-wrap img { width:100%; height:100%; object-fit:cover; }
+    .card-img-wrap img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
     .no-img { height:100%; display:flex; align-items:center; justify-content:center; color:#4b5563; font-size:2rem; }
     .type-badge { position:absolute; top:0.6rem; left:0.6rem; padding:0.2rem 0.6rem; border-radius:999px; font-size:0.7rem; font-weight:700; backdrop-filter:blur(6px); }
     .type-badge.lost { background:rgba(239,68,68,0.8); color:white; }
@@ -181,7 +187,8 @@ L.Icon.Default.mergeOptions({
   `]
 })
 export class ReportsListComponent implements OnInit, OnDestroy, AfterViewInit {
-  private reportService = inject(ReportService);
+  // Public so template & popup HTML can use the helper
+  readonly reportService = inject(ReportService);
   private speciesService = inject(SpeciesService);
 
   reports = signal<AnimalReportResponse[]>([]);
@@ -192,7 +199,7 @@ export class ReportsListComponent implements OnInit, OnDestroy, AfterViewInit {
   totalPages = signal(1);
   uploadsUrl = environment.uploadsUrl;
 
-  filter = { type: '', speciesId: '', location: '' };
+  filter = { type: '', speciesId: '', location: '', status: 'PENDING' as string };
 
   @ViewChild('mapEl') mapElRef!: ElementRef;
   private map?: L.Map;
@@ -212,7 +219,8 @@ export class ReportsListComponent implements OnInit, OnDestroy, AfterViewInit {
     const type = this.filter.type || undefined;
     const speciesId = this.filter.speciesId ? +this.filter.speciesId : undefined;
     const loc = this.filter.location || undefined;
-    this.reportService.getAll({ type, speciesId, location: loc, page: p, size: 12 }).subscribe({
+    const status = this.filter.status || undefined;
+    this.reportService.getAll({ type, speciesId, location: loc, status, page: p, size: 12 }).subscribe({
       next: res => {
         this.reports.set(res.content);
         this.totalPages.set(res.totalPages);
@@ -230,8 +238,11 @@ export class ReportsListComponent implements OnInit, OnDestroy, AfterViewInit {
 
   switchToMap() {
     this.view.set('map');
-    // Load all reports for the map (no pagination)
-    this.reportService.getAll({ page: 0, size: 200 }).subscribe(res => {
+    const type = this.filter.type || undefined;
+    const speciesId = this.filter.speciesId ? +this.filter.speciesId : undefined;
+    const loc = this.filter.location || undefined;
+    const status = this.filter.status || undefined;
+    this.reportService.getAll({ type, speciesId, location: loc, status, page: 0, size: 200 }).subscribe(res => {
       this.reports.set(res.content);
       setTimeout(() => this.initMap(), 50);
     });
@@ -269,7 +280,7 @@ export class ReportsListComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const popup = `
         <div style="min-width:180px;font-family:Inter,sans-serif">
-          ${r.image ? `<img src="${this.uploadsUrl}/reports/${r.image}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;" />` : ''}
+          ${r.image ? `<img src="${this.reportService.imageUrl(r.image)}" style="width:100%;height:100px;object-fit:cover;border-radius:6px;margin-bottom:8px;" />` : ''}
           <div style="font-size:11px;color:${color};font-weight:700;margin-bottom:2px">${r.isFound ? 'FOUND' : 'LOST'} · ${r.speciesName}</div>
           <div style="font-weight:700;margin-bottom:4px;color:#111">${r.name || 'Unknown'}</div>
           <div style="font-size:11px;color:#666;margin-bottom:8px">${r.location}</div>

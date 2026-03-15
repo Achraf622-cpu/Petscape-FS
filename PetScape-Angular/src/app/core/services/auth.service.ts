@@ -65,7 +65,7 @@ export class AuthService {
     this._token.set(res.token);
     localStorage.setItem(this.REFRESH_KEY, res.refreshToken);
     const user: Partial<AuthResponse> = {
-      email: res.email, firstname: res.firstname,
+      id: res.id, email: res.email, firstname: res.firstname,
       lastname: res.lastname, role: res.role
     };
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));

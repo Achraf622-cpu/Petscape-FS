@@ -219,7 +219,12 @@ export class CreateReportComponent implements OnInit, OnDestroy, AfterViewInit {
   private pinMarker?: L.Marker;
 
   ngOnInit() {
-    this.speciesService.getAll().subscribe(s => this.species.set(s));
+    // Only allow Dog and Cat for lost/found reports, as requested
+    this.speciesService.getAll().subscribe(s =>
+      this.species.set(
+        s.filter(sp => sp.name?.toLowerCase() === 'dog' || sp.name?.toLowerCase() === 'cat')
+      )
+    );
   }
 
   ngAfterViewInit() {
