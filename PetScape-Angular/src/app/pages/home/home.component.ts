@@ -11,6 +11,7 @@ import { AnimalResponse, AnimalReportResponse } from '../../models/models';
   imports: [RouterLink, SlicePipe],
   template: `
     <!-- ── Hero Section ── -->
+    <!-- ── Hero Section ── -->
     <section class="hero">
       <div class="hero-bg">
         <div class="hero-orb orb1"></div>
