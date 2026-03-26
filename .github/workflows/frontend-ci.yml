@@ -39,7 +39,7 @@ jobs:
 
       - name: Run Tests
         # Ensure your project has karma.conf.js configured to use ChromeHeadless for CI tests
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        run: npm run test -- --watch=false
         continue-on-error: true # Allows the pipeline to finish in case of flaky tests at first
 
       - name: Build Production App

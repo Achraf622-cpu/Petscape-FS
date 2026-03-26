@@ -9,6 +9,8 @@ import com.petscape.exception.BadRequestException;
 import com.petscape.repository.UserRepository;
 import com.petscape.security.JwtUtil;
 import com.petscape.service.impl.AuthServiceImpl;
+import com.petscape.service.IRefreshTokenService;
+import com.petscape.entity.RefreshToken;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +44,8 @@ class AuthServiceImplTest {
     private AuthenticationManager authenticationManager;
     @Mock
     private JavaMailSender mailSender;
+    @Mock
+    private IRefreshTokenService refreshTokenService;
 
     @InjectMocks
     private AuthServiceImpl authService;
@@ -68,6 +72,7 @@ class AuthServiceImplTest {
                 .firstname("John").lastname("Doe").role(Role.USER).build();
         when(userRepository.save(any(User.class))).thenReturn(saved);
         when(jwtUtil.generateToken(any(User.class))).thenReturn("jwt-token");
+        when(refreshTokenService.createToken(any(User.class))).thenReturn(new RefreshToken());
 
         // Act
         AuthResponse response = authService.register(req);
@@ -118,6 +123,7 @@ class AuthServiceImplTest {
         when(auth.getPrincipal()).thenReturn(user);
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(auth);
         when(jwtUtil.generateToken(user)).thenReturn("jwt-token");
+        when(refreshTokenService.createToken(any(User.class))).thenReturn(new RefreshToken());
 
         AuthResponse response = authService.login(req);
         assertThat(response.getToken()).isEqualTo("jwt-token");

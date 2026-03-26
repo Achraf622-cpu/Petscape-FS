@@ -11,6 +11,7 @@ import com.petscape.exception.ResourceNotFoundException;
 import com.petscape.mapper.AppointmentMapper;
 import com.petscape.repository.AnimalRepository;
 import com.petscape.repository.AppointmentRepository;
+import com.petscape.repository.UserRepository;
 import com.petscape.service.impl.AppointmentServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,6 +42,10 @@ class AppointmentServiceImplTest {
     private AnimalRepository animalRepository;
     @Mock
     private AppointmentMapper appointmentMapper;
+    @Mock
+    private UserRepository userRepository;
+    @Mock
+    private com.petscape.service.INotificationService notificationService;
     @InjectMocks
     private AppointmentServiceImpl appointmentService;
 
@@ -62,9 +67,12 @@ class AppointmentServiceImplTest {
         User user = makeUser(1L);
         Appointment saved = new Appointment();
         saved.setId(1L);
+        saved.setDateTime(LocalDateTime.now().plusDays(1));
+        saved.setAnimal(animal);
         AppointmentResponse dto = AppointmentResponse.builder().id(1L).build();
 
         when(animalRepository.findById(1L)).thenReturn(Optional.of(animal));
+        when(userRepository.findByRole(any())).thenReturn(List.of());
         when(appointmentRepository.save(any(Appointment.class))).thenReturn(saved);
         when(appointmentMapper.toResponse(saved)).thenReturn(dto);
 
@@ -147,6 +155,10 @@ class AppointmentServiceImplTest {
         Appointment appointment = new Appointment();
         appointment.setId(1L);
         appointment.setUser(admin);
+        Animal animal = new Animal();
+        animal.setName("Buddy");
+        appointment.setAnimal(animal);
+        appointment.setDateTime(LocalDateTime.now().plusDays(1));
         appointment.setStatus(AppointmentStatus.PENDING);
         AppointmentResponse dto = AppointmentResponse.builder().id(1L).build();
 

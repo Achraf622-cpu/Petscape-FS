@@ -12,6 +12,7 @@ import com.petscape.exception.ResourceNotFoundException;
 import com.petscape.mapper.AdoptionRequestMapper;
 import com.petscape.repository.AdoptionRequestRepository;
 import com.petscape.repository.AnimalRepository;
+import com.petscape.service.INotificationService;
 import com.petscape.service.impl.AdoptionRequestServiceImpl;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,8 @@ class AdoptionRequestServiceImplTest {
     private AnimalRepository animalRepository;
     @Mock
     private AdoptionRequestMapper adoptionRequestMapper;
+    @Mock
+    private INotificationService notificationService;
     @InjectMocks
     private AdoptionRequestServiceImpl service;
 
@@ -63,7 +66,7 @@ class AdoptionRequestServiceImplTest {
         when(adoptionRequestRepository.findByUserIdAndAnimalIdAndStatus(1L, 10L, AdoptionStatus.PENDING))
                 .thenReturn(Optional.empty());
         when(adoptionRequestRepository.save(any())).thenReturn(saved);
-        when(adoptionRequestMapper.toResponse(saved)).thenReturn(dto);
+        when(adoptionRequestMapper.toResponse(any(AdoptionRequest.class))).thenReturn(dto);
 
         AdoptionRequestResponse result = service.store(10L, "want this pet", user);
         assertThat(result).isSameAs(dto);

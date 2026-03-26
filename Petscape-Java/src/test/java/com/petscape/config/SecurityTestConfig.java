@@ -6,6 +6,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
+import org.springframework.boot.test.mock.mockito.MockBean;
+import com.petscape.security.JwtUtil;
+
 /**
  * Permissive security config used only in @WebMvcTest slice tests.
  * Disables CSRF and lets all requests through so tests can focus on
@@ -13,6 +16,9 @@ import org.springframework.security.web.SecurityFilterChain;
  */
 @TestConfiguration
 public class SecurityTestConfig {
+
+    @MockBean
+    private JwtUtil jwtUtil;
 
     @Bean
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
