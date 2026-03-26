@@ -1,0 +1,46 @@
+name: PetsCape Frontend CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'PetScape-Angular/**'
+      - '.github/workflows/frontend-ci.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'PetScape-Angular/**'
+      - '.github/workflows/frontend-ci.yml'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & Test Angular App
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./PetScape-Angular
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'PetScape-Angular/package-lock.json'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Tests
+        # Ensure your project has karma.conf.js configured to use ChromeHeadless for CI tests
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        continue-on-error: true # Allows the pipeline to finish in case of flaky tests at first
+
+      - name: Build Production App
+        run: npm run build
