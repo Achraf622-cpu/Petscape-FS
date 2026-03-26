@@ -41,7 +41,6 @@ public class NotificationServiceImpl implements INotificationService {
 
         Notification saved = notificationRepository.save(notification);
 
-        // Push in real-time to the user's WebSocket session (fire-and-forget)
         wsPushService.pushNotification(user.getEmail(), saved);
         log.debug("Created and pushed notification {} of type {} for user {}", saved.getId(), type, user.getEmail());
         return saved;

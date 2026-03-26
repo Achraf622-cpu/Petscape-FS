@@ -1,59 +1,42 @@
-# PetscapeAngular
+# 🐾 PetScape Frontend Architecture
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+![Angular](https://img.shields.io/badge/Angular-DD0031?style=for-the-badge&logo=angular&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-## Development server
+Welcome to the **PetScape SPA** — the comprehensive, high-performance Angular client that powers the PetScape pet adoption and management ecosystem.
 
-To start a local development server, run:
+## 🚀 Features at a Glance
+- **Community Adoption Engine:** Browse and filter hundreds of adorable pets awaiting their forever homes.
+- **Lost & Found Reporting:** Rapid crowdsourced reporting interface to unite lost pets with their owners.
+- **Veterinary Appointment Booking:** Embedded dynamic scheduling engine for medical exams.
+- **Admin Control Matrix:** A fully insulated backoffice portal governing user roles, animals, adoptions, and robust system metrics.
+- **Real-Time Websocket Streams:** Live telemetry and community alerts pushed directly into the localized toast engine.
+
+## 🏗️ Architecture Stack
+* **Framework:** Angular 17+ (Standalone Components, Signals, RxJS)
+* **Styling Engine:** Tailwind CSS (Strict Utility-First)
+* **State Management:** Reactive Component State via BehaviorSubjects & HTTP Interceptors
+* **Real-time Engine:** SockJS + STOMP over Websockets
+
+## 🛠️ Local Development Server
+
+Run exactly these commands to spin up the local development instance.
 
 ```bash
+# Install the necessary payload dependencies
+npm install
+
+# Boot the local Angular development engine at http://localhost:4200/
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+## 🐋 Production Docker Engine
+For robust containerized production deployments, leverage the embedded multi-stage Dockerfile containing optimized Nginx configurations:
 ```bash
-ng generate component component-name
+docker build -t petscape-frontend .
+docker run -p 80:80 petscape-frontend
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
+*Built sequentially to solve the modern pet welfare crisis.*

@@ -33,12 +33,7 @@ public class DonationController {
         return ResponseEntity.ok(Map.of("checkoutUrl", checkoutUrl));
     }
 
-    /**
-     * Stripe redirects the browser here after a successful payment (plain GET, no
-     * JWT).
-     * We identify the donor from the userId stored in the Stripe session metadata.
-     * This endpoint is public — no auth required.
-     */
+
     @GetMapping("/success")
     @Operation(summary = "Handle Stripe success callback (public — no JWT needed)")
     public ResponseEntity<Map<String, Object>> success(

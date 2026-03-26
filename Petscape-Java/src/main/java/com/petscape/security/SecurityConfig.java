@@ -33,10 +33,7 @@ public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
     private final UserDetailsServiceImpl userDetailsService;
 
-    /**
-     * Comma-separated allowed origins, e.g.
-     * http://localhost:4200,https://petscape.com
-     */
+
     @Value("${app.cors.allowed-origins:http://localhost:4200}")
     private List<String> allowedOrigins;
 

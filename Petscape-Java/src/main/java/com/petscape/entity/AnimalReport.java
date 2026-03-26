@@ -38,7 +38,7 @@ public class AnimalReport {
     @Column(nullable = false)
     private String location;
 
-    /** Map coordinates — optional, filled when user picks a point on the map */
+
     private Double latitude;
 
     private Double longitude;

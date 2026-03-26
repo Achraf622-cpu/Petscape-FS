@@ -23,10 +23,7 @@ public interface DonationRepository extends JpaRepository<Donation, Long> {
     @Query("SELECT COALESCE(AVG(d.amount), 0) FROM Donation d WHERE d.status = 'COMPLETED'")
     BigDecimal avgDonationAmount();
 
-    /**
-     * Returns [month (1-12), totalAmount] pairs for COMPLETED donations in the
-     * given year
-     */
+
     @Query("SELECT MONTH(d.createdAt), SUM(d.amount) FROM Donation d " +
             "WHERE d.status = 'COMPLETED' AND YEAR(d.createdAt) = :year " +
             "GROUP BY MONTH(d.createdAt) ORDER BY MONTH(d.createdAt)")

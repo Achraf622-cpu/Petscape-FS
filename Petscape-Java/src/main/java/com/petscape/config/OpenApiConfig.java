@@ -14,15 +14,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
-/**
- * Configures the SpringDoc OpenAPI UI available at:
- * http://localhost:8080/swagger-ui/index.html
- *
- * Features:
- * - Full API metadata (title, version, description, contact)
- * - JWT Bearer authentication scheme wired into the Authorize button
- * - Local + production server entries
- */
+
 @Configuration
 public class OpenApiConfig {
 

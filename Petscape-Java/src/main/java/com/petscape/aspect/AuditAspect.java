@@ -16,14 +16,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
-/**
- * AOP Aspect that intercepts all {@code @Auditable} service methods and
- * persists an {@link AuditLog} entry automatically.
- *
- * <p>
- * Demonstrates: AOP as a cross-cutting concern, Single Responsibility Principle
- * (audit logic is fully separated from business logic).
- */
+
 @Aspect
 @Component
 @RequiredArgsConstructor
@@ -34,7 +27,7 @@ public class AuditAspect {
 
     @Around("@annotation(auditable)")
     public Object audit(ProceedingJoinPoint joinPoint, Auditable auditable) throws Throwable {
-        // Extract authenticated user (nullable if called unauthenticated)
+
         Long userId = null;
         String userEmail = "anonymous";
 
@@ -49,7 +42,7 @@ public class AuditAspect {
         try {
             result = joinPoint.proceed();
 
-            // Try to extract entity ID from the returned DTO (if it has an getId() method)
+
             if (result != null) {
                 try {
                     var method = result.getClass().getMethod("getId");
@@ -61,7 +54,6 @@ public class AuditAspect {
                 }
             }
         } finally {
-            // Always persist the audit log — even on failure
             AuditLog auditEntry = AuditLog.builder()
                     .userId(userId)
                     .userEmail(userEmail)
@@ -75,7 +67,6 @@ public class AuditAspect {
             try {
                 auditLogRepository.save(auditEntry);
             } catch (Exception e) {
-                // Audit failure must NEVER break the main flow
                 log.warn("Failed to persist audit log for action {}: {}", auditable.action(), e.getMessage());
             }
         }

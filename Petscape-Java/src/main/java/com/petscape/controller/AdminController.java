@@ -26,8 +26,7 @@ import java.util.Map;
 public class AdminController {
 
     private final IAdminService adminService;
-    // No repository injected here — DIP respected: controller → service interface
-    // only
+
 
     @GetMapping("/dashboard")
     @Operation(summary = "Dashboard statistics: animals, appointments, reports, adoption counts")

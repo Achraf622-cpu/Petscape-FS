@@ -62,13 +62,13 @@ public class AppointmentServiceImpl implements IAppointmentService {
         log.debug("Booked appointment {} for user {} and animal {}", saved.getId(), currentUser.getEmail(),
                 animal.getName());
 
-        // Notify all admins that a new appointment request has been created
+
         java.util.List<User> admins = userRepository.findByRole(User.Role.ADMIN);
         String requesterName = currentUser.getFirstname() + " " + currentUser.getLastname();
         String animalName = animal.getName();
         String dateLabel = saved.getDateTime().toLocalDate().toString();
         for (User admin : admins) {
-            // Use existing GENERAL type to avoid database enum mismatches
+
             notificationService.createFor(
                     admin.getId(),
                     "New appointment request",

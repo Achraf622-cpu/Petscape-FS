@@ -22,10 +22,10 @@ public interface AdoptionRequestRepository extends JpaRepository<AdoptionRequest
 
     List<AdoptionRequest> findByStatus(AdoptionStatus status);
 
-    /** For user dashboard — paginated list of a user's own requests */
+
     Page<AdoptionRequest> findByUserId(Long userId, Pageable pageable);
 
-    /** Returns [month (1-12), count] pairs for adoptions in the given year */
+
     @Query("SELECT MONTH(a.createdAt), COUNT(a) FROM AdoptionRequest a " +
             "WHERE YEAR(a.createdAt) = :year " +
             "GROUP BY MONTH(a.createdAt) ORDER BY MONTH(a.createdAt)")

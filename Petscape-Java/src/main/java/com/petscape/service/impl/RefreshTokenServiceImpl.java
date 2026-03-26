@@ -25,8 +25,7 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService {
     @Override
     @Transactional
     public RefreshToken createToken(User user) {
-        // Revoke existing tokens before issuing a new one (single active token per
-        // user)
+
         refreshTokenRepository.revokeAllByUserId(user.getId());
 
         RefreshToken token = RefreshToken.builder()
@@ -46,14 +45,12 @@ public class RefreshTokenServiceImpl implements IRefreshTokenService {
                 .orElseThrow(() -> new BadRequestException("Invalid refresh token"));
 
         if (!stored.isValid()) {
-            // If the token has already been used or is expired, revoke ALL tokens for this
-            // user
-            // (possible token theft — treat as security incident)
+
             refreshTokenRepository.revokeAllByUserId(stored.getUser().getId());
             throw new BadRequestException("Refresh token has expired or been revoked. Please log in again.");
         }
 
-        // Token rotation: revoke current token (single-use)
+
         stored.setRevoked(true);
         refreshTokenRepository.save(stored);
 

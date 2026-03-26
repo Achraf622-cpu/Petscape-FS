@@ -14,17 +14,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Every error the API can emit is serialised as:
- * {
- * "status": 422,
- * "message": "Validation failed",
- * "timestamp": "2026-02-25T20:28:00",
- * "errors": { "field": "reason" } ← only present for 422
- * }
- *
- * Angular's HttpInterceptor can key off "status" reliably.
- */
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 

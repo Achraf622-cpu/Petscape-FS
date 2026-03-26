@@ -47,8 +47,6 @@ public class DonationServiceImpl implements IDonationService {
         try {
             SessionCreateParams params = SessionCreateParams.builder()
                     .setMode(SessionCreateParams.Mode.PAYMENT)
-                    // Store userId in metadata so we can look up the donor on the success callback
-                    // without needing a JWT (Stripe redirects are simple browser GETs)
                     .putMetadata("userId", currentUser.getId().toString())
                     .setSuccessUrl(success)
                     .setCancelUrl(cancel)
@@ -71,8 +69,7 @@ public class DonationServiceImpl implements IDonationService {
     @Transactional
     public Map<String, Object> handleSuccess(String sessionId) {
         Stripe.apiKey = stripeSecretKey;
-        // Idempotent check — prevent double-recording if user refreshes the success
-        // page
+
         if (donationRepository.findByStripeSessionId(sessionId).isPresent()) {
             log.info("Stripe session {} already processed — skipping", sessionId);
             return Map.of("message", "Donation already recorded. Thank you!");
@@ -82,7 +79,6 @@ public class DonationServiceImpl implements IDonationService {
             if (!"paid".equals(session.getPaymentStatus()))
                 throw new BadRequestException("Payment not completed");
 
-            // Retrieve the user from the metadata we embedded at checkout time
             String userIdStr = session.getMetadata() != null ? session.getMetadata().get("userId") : null;
             if (userIdStr == null)
                 throw new BadRequestException("Session metadata missing userId");

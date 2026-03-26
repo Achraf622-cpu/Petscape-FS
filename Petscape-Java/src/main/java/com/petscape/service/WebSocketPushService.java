@@ -49,7 +49,7 @@ public class WebSocketPushService {
                     payload);
             log.debug("Pushed WebSocket notification to user {}: {}", userEmail, notification.getTitle());
         } catch (Exception e) {
-            // Non-critical — DB notification was already saved, just log the push failure
+
             log.warn("Failed to push WebSocket notification to {}: {}", userEmail, e.getMessage());
         }
     }

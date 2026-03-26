@@ -19,21 +19,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 
 import java.util.Collections;
 
-/**
- * WebSocket STOMP configuration.
- *
- * Flow:
- * 1. Client connects to /ws (with SockJS fallback).
- * 2. Client subscribes to /user/queue/notifications (private queue per user).
- * 3. Backend calls SimpMessagingTemplate.convertAndSendToUser(email,
- * "/queue/notifications", payload).
- * 4. Client receives the notification in real-time.
- *
- * JWT Auth:
- * The CONNECT frame must carry Authorization: Bearer <token> in STOMP headers.
- * JwtUtil validates the token and we set the authenticated principal on the
- * session.
- */
+
 @Slf4j
 @Configuration
 @EnableWebSocketMessageBroker

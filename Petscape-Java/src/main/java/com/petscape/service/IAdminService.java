@@ -20,7 +20,7 @@ public interface IAdminService {
 
     Map<String, Object> getDonationStats(Pageable pageable);
 
-    /** Filtered, paginated audit log — all filters are optional */
+
     Page<AuditLog> getAuditLogs(Long userId, String action, String entityType, Pageable pageable);
 
     // ── User Management ──

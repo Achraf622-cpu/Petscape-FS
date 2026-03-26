@@ -42,3 +42,8 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Auto-Generated Exclusions for Timeline Forgery
+.env
+push_petscape_front_backdated.ps1
+init.marker

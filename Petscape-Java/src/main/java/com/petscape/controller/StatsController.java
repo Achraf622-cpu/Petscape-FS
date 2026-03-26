@@ -15,10 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.Map;
 
-/**
- * Public statistics endpoint — no auth required.
- * Powers the /stats page with live aggregated data.
- */
+
 @RestController
 @RequestMapping("/api/stats")
 @RequiredArgsConstructor

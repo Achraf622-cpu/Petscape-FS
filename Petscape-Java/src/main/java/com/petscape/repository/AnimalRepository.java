@@ -17,7 +17,7 @@ public interface AnimalRepository extends JpaRepository<Animal, Long>, JpaSpecif
 
     long countByStatus(AnimalStatus status);
 
-    /** Returns [speciesName, count] pairs for the species breakdown chart */
+
     @Query("SELECT a.species.name, COUNT(a) FROM Animal a GROUP BY a.species.name ORDER BY COUNT(a) DESC")
     List<Object[]> countBySpecies();
 }

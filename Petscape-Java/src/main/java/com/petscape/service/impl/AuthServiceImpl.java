@@ -60,7 +60,7 @@ public class AuthServiceImpl implements IAuthService {
         userRepository.save(user);
         sendVerificationEmail(user, verificationToken);
 
-        // Issue both tokens on register so the frontend is immediately usable
+
         RefreshToken refreshToken = refreshTokenService.createToken(user);
         return buildAuthResponse(user, jwtUtil.generateToken(user), refreshToken.getToken());
     }
@@ -99,7 +99,7 @@ public class AuthServiceImpl implements IAuthService {
         if (user.getEmailVerifiedAt() != null) {
             throw new BadRequestException("Email is already verified");
         }
-        // Generate a fresh token and resend
+
         String newToken = UUID.randomUUID().toString();
         user.setEmailVerificationToken(newToken);
         userRepository.save(user);
@@ -108,7 +108,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public AuthResponse refresh(String rawRefreshToken) {
-        // Validate + rotate: old token is revoked, user is extracted
+
         RefreshToken oldToken = refreshTokenService.validateAndRotate(rawRefreshToken);
         User user = oldToken.getUser();
 
@@ -119,7 +119,7 @@ public class AuthServiceImpl implements IAuthService {
 
     @Override
     public void logout(String rawRefreshToken) {
-        // Best-effort: if token is not found, we still consider the logout successful
+
         try {
             RefreshToken token = refreshTokenService.validateAndRotate(rawRefreshToken);
             refreshTokenService.revokeAllForUser(token.getUser().getId());

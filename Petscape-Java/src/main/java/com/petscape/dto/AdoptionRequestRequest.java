@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
-/**
- * Request body for POST /api/adoption-requests
- */
+
 @Getter
 public class AdoptionRequestRequest {
 

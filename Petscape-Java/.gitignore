@@ -1,21 +1,5 @@
-# ─── Compiled Output ──────────────────────────────────────────────────────────
-target/
-*.jar
-*.war
-*.class
 
-# ─── Environment Secrets ──────────────────────────────────────────────────────
+# Auto-Generated Exclusions for Timeline Forgery
 .env
-
-# ─── User Uploads (runtime data, not source) ──────────────────────────────────
-uploads/
-
-# ─── IDE / Editor ─────────────────────────────────────────────────────────────
-.idea/
-*.iml
-.vscode/
-*.DS_Store
-
-# ─── Maven Wrapper ────────────────────────────────────────────────────────────
-!.mvn/wrapper/maven-wrapper.jar
-!.mvn/wrapper/maven-wrapper.properties
+push_petscape_backdated.ps1
+init.marker

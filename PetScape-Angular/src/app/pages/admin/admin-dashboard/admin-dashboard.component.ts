@@ -174,7 +174,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
       next: d => {
         this.stats.set(d);
         this.loading.set(false);
-        // Give DOM time to render canvases
+
         setTimeout(() => this.buildCharts(), 100);
       },
       error: () => { this.loading.set(false); this.stats.set(this.mockStats()); setTimeout(() => this.buildCharts(), 100); }
@@ -192,7 +192,7 @@ export class AdminDashboardComponent implements OnInit, AfterViewInit {
     const speciesData = s['animalsBySpecies'] ?? { Dogs:12, Cats:20, Birds:5, Rabbits:3, Reptiles:2 };
     const donationsByMonth = s['donationsByMonth'] ?? Array(12).fill(0);
 
-    // Line chart — Adoptions
+
     if (this.adoptionsChartRef) {
       new Chart(this.adoptionsChartRef.nativeElement, {
         type: 'line',

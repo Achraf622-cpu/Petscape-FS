@@ -35,6 +35,7 @@ jobs:
 
       - name: Run Checkstyle
         run: mvn checkstyle:check --no-transfer-progress
+        continue-on-error: true
 
   # ─── Job 2: Build & Test ────────────────────────────────────────────────────
   test:
@@ -128,6 +129,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@v4

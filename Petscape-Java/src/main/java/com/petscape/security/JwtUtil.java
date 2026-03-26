@@ -13,11 +13,7 @@ import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
 
-/**
- * JWT utility — generates and validates JJWT tokens.
- * The signing key is initialised once at startup (@PostConstruct) and reused
- * for every request.
- */
+
 @Component
 @Slf4j
 public class JwtUtil {

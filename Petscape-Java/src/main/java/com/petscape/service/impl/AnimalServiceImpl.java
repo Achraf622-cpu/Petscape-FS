@@ -73,30 +73,27 @@ public class AnimalServiceImpl implements IAnimalService {
         animalMapper.updateEntityFromRequest(request, animal);
         animal.setSpecies(species);
         
-        // Handle existing images deletion
+
         if (request.getExistingImages() != null) {
             List<String> imagesToKeep = request.getExistingImages();
             
-            // Find images that are currently in the animal but not in the keep list
+
             List<String> imagesToDelete = animal.getImages().stream()
                 .filter(img -> !imagesToKeep.contains(img))
                 .toList();
                 
-            // Delete them from storage
+
             imagesToDelete.forEach(fileStorageService::delete);
             
-            // Retain only the ones to keep
+
             animal.getImages().retainAll(imagesToKeep);
         } else {
-            // If existingImages is explicitly null (not empty), it might mean the frontend didn't send them,
-            // or wants to clear them all. To be safe, if we get an empty list, we clear; if null, we could assume clear.
-            // Let's assume if it's missing (null), we clear all old images (depends on frontend sending empty array).
-            // Actually, better to just clear all if it's null to be consistent.
+
             animal.getImages().forEach(fileStorageService::delete);
             animal.getImages().clear();
         }
 
-        // Append new images to the list
+
         if (request.getImages() != null) {
             request.getImages().stream()
                 .filter(f -> f != null && !f.isEmpty())

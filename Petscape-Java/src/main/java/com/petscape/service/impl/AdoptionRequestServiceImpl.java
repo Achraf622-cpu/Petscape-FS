@@ -135,7 +135,7 @@ public class AdoptionRequestServiceImpl implements IAdoptionRequestService {
     @Override
     public AdoptionRequestResponse getById(Long id, User currentUser) {
         AdoptionRequest request = findById(id);
-        // Only owner or admin can view a specific request
+
         if (!request.getUser().getId().equals(currentUser.getId()) && !currentUser.isAdmin()) {
             throw new ForbiddenException("You are not authorized to view this adoption request");
         }

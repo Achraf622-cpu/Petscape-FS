@@ -63,7 +63,7 @@ public class User implements UserDetails {
     private LocalDateTime bannedAt;
 
     @Column(name = "banned_until")
-    private LocalDateTime bannedUntil; // null = permanent
+    private LocalDateTime bannedUntil;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

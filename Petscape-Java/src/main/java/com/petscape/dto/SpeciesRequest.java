@@ -4,9 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
-/**
- * Request body for POST /api/species and PUT /api/species/{id}
- */
+
 @Getter
 public class SpeciesRequest {
 
