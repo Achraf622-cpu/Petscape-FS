@@ -1,0 +1,87 @@
+<div class="page-enter">
+  <div class="page-title">
+    <h2><i class="bi bi-gift-fill"></i> Support PetsCape</h2>
+    <p>Your donation helps us care for animals and keep them safe</p>
+  </div>
+
+  <div class="donate-grid">
+    <!-- Amounts -->
+    <div class="glass-card donate-card">
+      <h3>Choose a donation amount</h3>
+      <div class="amount-presets">
+        @for (preset of presets; track preset) {
+          <button
+            class="amount-btn"
+            [class.selected]="amount() === preset"
+            (click)="amount.set(preset)"
+          >
+            {{ formatAmount(preset) }}
+          </button>
+        }
+      </div>
+      <div class="custom-amount">
+        <label>Or enter custom amount (USD)</label>
+        <div class="input-wrap">
+          <span class="currency-symbol">$</span>
+          <input
+            type="number"
+            [(ngModel)]="customAmount"
+            class="form-control custom-input"
+            placeholder="e.g. 25"
+            (input)="onCustomAmount()"
+            min="1"
+          />
+        </div>
+      </div>
+      <div class="total-display">
+        <span>Donation amount:</span>
+        <span class="total-amount">{{ formatAmount(amount()) }}</span>
+      </div>
+      <button class="btn-accent w-full" (click)="donate()" [disabled]="loading() || amount() <= 0">
+        @if (loading()) {
+          <span class="spinner-border spinner-border-sm me-2"></span> Processing...
+        } @else {
+          <i class="bi bi-credit-card"></i> Donate {{ formatAmount(amount()) }} via Stripe
+        }
+      </button>
+      <p class="secure-hint">
+        <i class="bi bi-shield-check"></i> Secured by Stripe — we never store your card details
+      </p>
+    </div>
+
+    <!-- Impact -->
+    <div class="glass-card impact-card">
+      <h3>Your Impact</h3>
+      <div class="impact-list">
+        <div class="impact-item">
+          <div class="impact-icon"><i class="bi bi-droplet-fill"></i></div>
+          <div>
+            <div class="impact-title">$10 provides</div>
+            <p>Food &amp; water for a pet for one week</p>
+          </div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon"><i class="bi bi-heart-pulse-fill"></i></div>
+          <div>
+            <div class="impact-title">$25 funds</div>
+            <p>A veterinary checkup for an adopted pet</p>
+          </div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon"><i class="bi bi-house-heart-fill"></i></div>
+          <div>
+            <div class="impact-title">$50 covers</div>
+            <p>One month of shelter care for a rescued animal</p>
+          </div>
+        </div>
+        <div class="impact-item">
+          <div class="impact-icon"><i class="bi bi-trophy-fill"></i></div>
+          <div>
+            <div class="impact-title">$100 sponsors</div>
+            <p>Full adoption preparation for one animal</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

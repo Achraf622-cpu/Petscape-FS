@@ -1,0 +1,45 @@
+<div class="page-enter">
+  <div class="page-title-row">
+    <div>
+      <h2><i class="bi bi-bell-fill"></i> Notifications</h2>
+      <p>Stay updated on your adoptions and appointments</p>
+    </div>
+    @if (notifications().some(n => !n.isRead)) {
+      <button class="btn-outline btn-sm" (click)="markAll()">
+        <i class="bi bi-check2-all"></i> Mark All Read
+      </button>
+    }
+  </div>
+
+  @if (loading()) {
+    <div class="notif-list">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton" style="height: 70px; border-radius: 0.75rem"></div>
+      }
+    </div>
+  } @else if (notifications().length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-bell-slash"></i>
+      <h3>All caught up!</h3>
+      <p>No notifications at the moment.</p>
+    </div>
+  } @else {
+    <div class="notif-list">
+      @for (n of notifications(); track n.id) {
+        <div class="notif-item" [class.unread]="!n.isRead" (click)="markRead(n)">
+          <div class="notif-icon" [class]="getIconClass(n.type)">
+            <i [class]="getIcon(n.type)"></i>
+          </div>
+          <div class="notif-body">
+            <div class="notif-title">{{ n.title }}</div>
+            <div class="notif-msg">{{ n.message }}</div>
+            <div class="notif-time">{{ n.createdAt | date: 'MMM d, h:mm a' }}</div>
+          </div>
+          @if (!n.isRead) {
+            <div class="unread-dot"></div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

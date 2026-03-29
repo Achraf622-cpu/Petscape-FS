@@ -1,0 +1,31 @@
+<div class="success-page">
+  <div class="success-card glass-card">
+    @if (loading()) {
+      <div class="loading-state">
+        <span class="spinner-border spinner-border-sm"></span>
+        <p>Verifying your donation...</p>
+      </div>
+    } @else if (error()) {
+      <div class="error-state">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <h3>Something went wrong</h3>
+        <p>{{ error() }}</p>
+        <a routerLink="/" class="btn-primary"><i class="bi bi-house"></i> Go Home</a>
+      </div>
+    } @else {
+      <div class="success-state">
+        <div class="check-circle"><i class="bi bi-check-lg"></i></div>
+        <h2>Thank You!</h2>
+        <p class="amount-display">
+          Your donation of <strong>{{ donationAmount }}</strong> has been recorded.
+        </p>
+        <p class="sub">Your generosity helps us rescue and care for animals in need.</p>
+        <div class="action-btns">
+          <button (click)="closeTab()" class="btn-primary">
+            <i class="bi bi-x-circle"></i> Close Tab
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

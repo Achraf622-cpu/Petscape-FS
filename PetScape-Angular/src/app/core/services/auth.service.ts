@@ -24,49 +24,57 @@ export class AuthService {
    */
   readonly ready: Promise<void>;
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+  ) {
     this.ready = this.tryInitialRefresh();
   }
 
   login(payload: LoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, payload).pipe(
-      tap(res => this.saveSession(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/login`, payload)
+      .pipe(tap((res) => this.saveSession(res)));
   }
 
   register(payload: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload).pipe(
-      tap(res => this.saveSession(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/register`, payload)
+      .pipe(tap((res) => this.saveSession(res)));
   }
 
   refresh(): Observable<AuthResponse> {
     const refreshToken = localStorage.getItem(this.REFRESH_KEY);
     if (!refreshToken) return throwError(() => new Error('No refresh token'));
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/refresh`, { refreshToken }).pipe(
-      tap(res => this.saveSession(res))
-    );
+    return this.http
+      .post<AuthResponse>(`${environment.apiUrl}/auth/refresh`, { refreshToken })
+      .pipe(tap((res) => this.saveSession(res)));
   }
 
   logout(): void {
     const refreshToken = localStorage.getItem(this.REFRESH_KEY);
     if (refreshToken) {
       this.http.post(`${environment.apiUrl}/auth/logout`, { refreshToken }).subscribe({
-        error: () => {} // silent fail — always clear locally
+        error: () => {}, // silent fail — always clear locally
       });
     }
     this.clearSession();
     this.router.navigate(['/auth/login']);
   }
 
-  getToken(): string | null { return this._token(); }
+  getToken(): string | null {
+    return this._token();
+  }
 
   private saveSession(res: AuthResponse): void {
     this._token.set(res.token);
     localStorage.setItem(this.REFRESH_KEY, res.refreshToken);
     const user: Partial<AuthResponse> = {
-      id: res.id, email: res.email, firstname: res.firstname,
-      lastname: res.lastname, role: res.role
+      id: res.id,
+      email: res.email,
+      firstname: res.firstname,
+      lastname: res.lastname,
+      role: res.role,
     };
     localStorage.setItem(this.USER_KEY, JSON.stringify(user));
     this._user.set(user);

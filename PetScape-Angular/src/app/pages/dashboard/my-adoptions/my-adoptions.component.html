@@ -1,0 +1,64 @@
+<div class="page-enter">
+  <div class="page-title">
+    <h2><i class="bi bi-heart-fill"></i> My Adoption Requests</h2>
+    <p>Track the status of your pet adoption requests</p>
+  </div>
+
+  @if (loading()) {
+    <div class="cards-list">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton" style="height: 100px; border-radius: 0.75rem"></div>
+      }
+    </div>
+  } @else if (page().content.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-heart"></i>
+      <h3>No adoption requests yet</h3>
+      <p>Browse our animals and submit your first adoption request!</p>
+      <a routerLink="/animals" class="btn-primary">Browse Pets</a>
+    </div>
+  } @else {
+    <div class="cards-list">
+      @for (req of page().content; track req.id) {
+        <div class="req-card glass-card">
+          <div class="req-info">
+            <h4>{{ req.animalName }}</h4>
+            <p class="text-muted-custom">
+              {{ req.message | slice: 0 : 100 }}{{ (req.message || '').length > 100 ? '...' : '' }}
+            </p>
+            <p class="req-date text-muted-custom">{{ req.createdAt | date: 'MMM d, y' }}</p>
+          </div>
+          <div class="req-actions">
+            <span class="status-badge" [class]="'badge-' + req.status.toLowerCase()">{{
+              req.status
+            }}</span>
+            @if (req.status === 'PENDING') {
+              <button
+                class="btn-sm-danger"
+                (click)="cancel(req.id)"
+                [disabled]="cancelling() === req.id"
+              >
+                @if (cancelling() === req.id) {
+                  <span class="spinner-border spinner-border-sm"></span>
+                } @else {
+                  <i class="bi bi-x-circle"></i> Cancel
+                }
+              </button>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    @if (page().totalPages > 1) {
+      <div class="pag-wrap">
+        <button class="page-btn" [disabled]="page().first" (click)="load(page().number - 1)">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="page-info">Page {{ page().number + 1 }} of {{ page().totalPages }}</span>
+        <button class="page-btn" [disabled]="page().last" (click)="load(page().number + 1)">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+</div>

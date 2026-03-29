@@ -1,0 +1,146 @@
+<div class="page-enter">
+  <!-- Header -->
+  <div class="reports-header">
+    <div>
+      <h2 class="page-title"><i class="bi bi-search-heart-fill"></i> Lost & Found Reports</h2>
+      <p class="sub">Help reunite animals with their families</p>
+    </div>
+    <a routerLink="/reports/create" class="btn-primary">
+      <i class="bi bi-plus-lg"></i> Submit Report
+    </a>
+  </div>
+
+  <!-- Filters + View Toggle -->
+  <div class="filters-bar glass-card">
+    <div class="filter-group">
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filter.type"
+        (change)="applyFilters()"
+      >
+        <option value="">All Types</option>
+        <option value="lost">Lost</option>
+        <option value="found">Found</option>
+      </select>
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filter.status"
+        (change)="applyFilters()"
+      >
+        <option value="PENDING">Active only</option>
+        <option value="">All statuses</option>
+        <option value="RESOLVED">Resolved</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+      <select
+        class="form-select form-select-sm"
+        [(ngModel)]="filter.species"
+        (change)="applyFilters()"
+      >
+        <option value="">All Species</option>
+        @for (s of species(); track s) {
+          <option [value]="s">{{ s }}</option>
+        }
+      </select>
+      <input
+        class="form-control form-control-sm"
+        type="text"
+        placeholder="Search location..."
+        [(ngModel)]="filter.location"
+        (input)="applyFilters()"
+      />
+    </div>
+    <div class="view-toggle">
+      <button class="toggle-btn" [class.active]="view() === 'list'" (click)="view.set('list')">
+        <i class="bi bi-grid-3x3-gap"></i> Cards
+      </button>
+      <button class="toggle-btn" [class.active]="view() === 'map'" (click)="switchToMap()">
+        <i class="bi bi-map-fill"></i> Map
+      </button>
+    </div>
+  </div>
+
+  <!-- ── MAP VIEW ── -->
+  @if (view() === 'map') {
+    <div class="map-container glass-card">
+      <div class="map-header">
+        <span class="map-badge"
+          ><i class="bi bi-geo-alt-fill"></i> {{ reports().length }} reports on map</span
+        >
+        <span class="map-hint">Click a pin to see report details</span>
+      </div>
+      <div #mapEl id="reports-map"></div>
+    </div>
+  }
+
+  <!-- ── CARD VIEW ── -->
+  @if (view() === 'list') {
+    @if (loading()) {
+      <div class="cards-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton" style="height: 220px; border-radius: 0.75rem"></div>
+        }
+      </div>
+    } @else if (reports().length === 0) {
+      <div class="empty-state">
+        <div class="empty-icon"><i class="bi bi-search-heart"></i></div>
+        <h3>No reports found</h3>
+        <p>Be the first to help — submit a lost or found animal report</p>
+        <a routerLink="/reports/create" class="btn-primary">Submit Report</a>
+      </div>
+    } @else {
+      <div class="cards-grid">
+        @for (r of reports(); track r.id) {
+          <a class="report-card" [routerLink]="['/reports', r.id]">
+            <div class="card-img-wrap">
+              @if (r.image) {
+                <img [src]="reportService.imageUrl(r.image)" [alt]="r.species" />
+              } @else {
+                <div class="no-img"><i class="bi bi-image"></i></div>
+              }
+              <span class="type-badge" [class.lost]="!r.isFound" [class.found]="r.isFound">
+                @if (r.isFound) {
+                  <i class="bi bi-check-circle-fill"></i> Found
+                } @else {
+                  <i class="bi bi-search"></i> Lost
+                }
+              </span>
+              @if (r.latitude && r.longitude) {
+                <span class="has-location-badge"><i class="bi bi-geo-alt-fill"></i> Map pin</span>
+              }
+            </div>
+            <div class="card-body">
+              <div class="card-species">{{ r.species }}</div>
+              <h4 class="card-name">{{ r.name || 'Unknown' }}</h4>
+              <p class="card-desc">
+                {{ r.description | slice: 0 : 80
+                }}{{ (r.description || '').length > 80 ? '...' : '' }}
+              </p>
+              <div class="card-footer-meta">
+                <span><i class="bi bi-geo-alt"></i> {{ r.location }}</span>
+                <span>{{ r.createdAt | date: 'MMM d' }}</span>
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (totalPages() > 1) {
+        <div class="pagination-wrap">
+          <button class="btn-outline" [disabled]="page() === 0" (click)="changePage(page() - 1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-indicator">Page {{ page() + 1 }} / {{ totalPages() }}</span>
+          <button
+            class="btn-outline"
+            [disabled]="page() === totalPages() - 1"
+            (click)="changePage(page() + 1)"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

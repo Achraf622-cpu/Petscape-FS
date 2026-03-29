@@ -1,0 +1,197 @@
+<!-- ── Hero Section ── -->
+<!-- ── Hero Section ── -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb orb1"></div>
+    <div class="hero-orb orb2"></div>
+    <div class="hero-orb orb3"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-badge"><i class="bi bi-heart-fill"></i> Over 200 happy adoptions</div>
+    <h1>Find Your <span class="gradient-text">Perfect Companion</span></h1>
+    <p>
+      Connect with animals who need a loving home. Browse available pets, report lost animals, or
+      support our mission through donation.
+    </p>
+    <div class="hero-actions">
+      <a routerLink="/animals" class="btn-primary btn-lg">
+        <i class="bi bi-search"></i> Browse Pets
+      </a>
+      <a routerLink="/reports" class="btn-outline btn-lg">
+        <i class="bi bi-megaphone"></i> Lost & Found
+      </a>
+      <a routerLink="/dashboard/donate" class="btn-accent btn-lg">
+        <i class="bi bi-gift"></i> Donate
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats Section ── -->
+<section class="stats-section">
+  <div class="container-custom">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(20, 184, 166, 0.15); color: #14b8a6">
+          <i class="bi bi-heart-fill"></i>
+        </div>
+        <div class="stat-number">{{ adoptedCount() }}+</div>
+        <div class="stat-label">Pets Adopted</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b">
+          <i class="bi bi-search"></i>
+        </div>
+        <div class="stat-number">{{ reportCount() }}+</div>
+        <div class="stat-label">Reports Resolved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: #a78bfa">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="stat-number">500+</div>
+        <div class="stat-label">Happy Families</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: #f87171">
+          <i class="bi bi-gift-fill"></i>
+        </div>
+        <div class="stat-number">{{ availableCount() }}</div>
+        <div class="stat-label">Pets Available</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Featured Animals ── -->
+<section class="section">
+  <div class="container-custom">
+    <div class="section-header">
+      <h2>Animals <span class="gradient-text">Waiting for You</span></h2>
+      <p>Each of these animals deserves a forever home</p>
+    </div>
+
+    @if (loading()) {
+      <div class="animals-grid">
+        @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+          <div class="skeleton" style="height: 300px; border-radius: 0.75rem"></div>
+        }
+      </div>
+    } @else {
+      <div class="animals-grid">
+        @for (animal of featuredAnimals(); track animal.id) {
+          <a [routerLink]="['/animals', animal.id]" class="animal-card">
+            <div class="animal-img">
+              @if (animal.images && animal.images.length > 0) {
+                <img [src]="animalService.imageUrl(animal.images[0])" [alt]="animal.name" />
+              } @else {
+                <div class="no-img"><i class="bi bi-heart-fill"></i></div>
+              }
+              <span class="status-badge" [class]="'badge-' + animal.status.toLowerCase()">
+                {{ animal.status }}
+              </span>
+            </div>
+            <div class="animal-info">
+              <h3>{{ animal.name }}</h3>
+              <p class="animal-meta">
+                <i class="bi bi-tag"></i> {{ animal.species }} ·
+                <i class="bi bi-gender-ambiguous"></i> {{ animal.gender }} · {{ animal.age }} yr{{
+                  animal.age === 1 ? '' : 's'
+                }}
+              </p>
+              <p class="animal-desc">
+                {{ animal.description | slice: 0 : 80
+                }}{{ (animal.description || '').length > 80 ? '...' : '' }}
+              </p>
+              <div class="card-footer-action">Adopt me <i class="bi bi-arrow-right"></i></div>
+            </div>
+          </a>
+        }
+      </div>
+    }
+
+    <div class="text-center mt-8">
+      <a routerLink="/animals" class="btn-primary">
+        View All Available Pets <i class="bi bi-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ── How It Works ── -->
+<section class="section how-section">
+  <div class="container-custom">
+    <div class="section-header">
+      <h2>How <span class="gradient-text">It Works</span></h2>
+      <p>Three simple steps to find your perfect companion</p>
+    </div>
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-number">01</div>
+        <div class="step-icon"><i class="bi bi-search"></i></div>
+        <h3>Browse & Choose</h3>
+        <p>
+          Search through our verified animals and find the one that matches your lifestyle and
+          preferences.
+        </p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">02</div>
+        <div class="step-icon"><i class="bi bi-calendar-check"></i></div>
+        <h3>Request & Meet</h3>
+        <p>Submit an adoption request and book an appointment to meet your future companion.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-number">03</div>
+        <div class="step-icon"><i class="bi bi-house-heart"></i></div>
+        <h3>Bring Home</h3>
+        <p>Once approved, welcome your new family member and start your journey together!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Lost & Found Preview ── -->
+<section class="section">
+  <div class="container-custom">
+    <div class="section-header">
+      <h2>Recent <span class="gradient-text">Reports</span></h2>
+      <p>Help reunite pets with their families</p>
+    </div>
+    @if (!reportsLoading() && recentReports().length > 0) {
+      <div class="reports-grid">
+        @for (report of recentReports(); track report.id) {
+          <a [routerLink]="['/reports', report.id]" class="report-card">
+            <div class="report-card-img-wrap">
+              @if (report.image) {
+                <img [src]="reportService.imageUrl(report.image)" [alt]="report.species" />
+              } @else {
+                <div class="report-no-img"><i class="bi bi-camera"></i></div>
+              }
+              <span class="report-type" [class]="!report.isFound ? 'type-lost' : 'type-found'">
+                <i
+                  [class]="
+                    !report.isFound ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'
+                  "
+                ></i>
+                {{ !report.isFound ? 'LOST' : 'FOUND' }}
+              </span>
+            </div>
+            <p>
+              <strong>{{ report.name || report.species }}</strong> — {{ report.location }}
+            </p>
+            <p class="text-muted-custom text-sm">
+              {{ report.description | slice: 0 : 80
+              }}{{ (report.description || '').length > 80 ? '...' : '' }}
+            </p>
+          </a>
+        }
+      </div>
+    }
+    <div class="text-center mt-6">
+      <a routerLink="/reports" class="btn-outline">
+        <i class="bi bi-megaphone"></i> View All Reports
+      </a>
+    </div>
+  </div>
+</section>

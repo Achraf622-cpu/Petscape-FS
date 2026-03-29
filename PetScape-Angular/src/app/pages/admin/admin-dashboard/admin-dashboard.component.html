@@ -1,0 +1,106 @@
+<div class="page-enter">
+  <div class="dash-header">
+    <div>
+      <h2 class="admin-page-title"><i class="bi bi-speedometer2"></i> Dashboard</h2>
+      <p class="sub">Live overview of PetsCape activity</p>
+    </div>
+    <span class="live-dot"><span class="dot-pulse"></span> Live</span>
+  </div>
+
+  @if (loading()) {
+    <div class="stats-grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton" style="height: 100px; border-radius: 0.75rem"></div>
+      }
+    </div>
+  } @else if (stats()['totalAnimals'] !== undefined) {
+    <!-- ── Stat Cards ── -->
+    <div class="stats-grid">
+      <div class="stat-card teal">
+        <div class="stat-icon"><i class="bi bi-heart-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-val">{{ stats()['totalAnimals'] }}</div>
+          <div class="stat-lbl">Total Animals</div>
+          <div class="stat-sub">{{ stats()['availableAnimals'] }} available</div>
+        </div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon"><i class="bi bi-people-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-val">{{ stats()['ongoingAdoptions'] }}</div>
+          <div class="stat-lbl">Ongoing Adoptions</div>
+          <div class="stat-sub">{{ stats()['totalAdoptions'] }} total</div>
+        </div>
+      </div>
+      <div class="stat-card purple">
+        <div class="stat-icon"><i class="bi bi-calendar-check-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-val">{{ stats()['todayAppointments'] }}</div>
+          <div class="stat-lbl">Today's Appointments</div>
+          <div class="stat-sub">{{ stats()['totalAppointments'] }} total</div>
+        </div>
+      </div>
+      <div class="stat-card rose">
+        <div class="stat-icon"><i class="bi bi-megaphone-fill"></i></div>
+        <div class="stat-body">
+          <div class="stat-val">{{ stats()['activeReports'] }}</div>
+          <div class="stat-lbl">Active Reports</div>
+          <div class="stat-sub">{{ stats()['totalReports'] }} total</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Charts Row ── -->
+    <div class="charts-row">
+      <!-- Adoptions by month line chart -->
+      <div class="chart-card glass-card">
+        <div class="chart-header">
+          <h3><i class="bi bi-graph-up-arrow"></i> Adoptions This Year</h3>
+        </div>
+        <div class="chart-wrap">
+          <canvas #adoptionsChart></canvas>
+        </div>
+      </div>
+      <!-- Species breakdown doughnut -->
+      <div class="chart-card glass-card">
+        <div class="chart-header">
+          <h3><i class="bi bi-pie-chart-fill"></i> Animals by Species</h3>
+        </div>
+        <div class="chart-wrap chart-wrap-sm">
+          <canvas #speciesChart></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Donations Bar Chart ── -->
+    <div class="chart-card glass-card chart-full">
+      <div class="chart-header">
+        <h3><i class="bi bi-cash-stack"></i> Monthly Donations (USD)</h3>
+      </div>
+      <div class="chart-wrap">
+        <canvas #donationsChart></canvas>
+      </div>
+    </div>
+
+    <!-- ── Today's Appointments ── -->
+    @if (stats()['todayAppointmentsList']?.length > 0) {
+      <div class="glass-card appt-section">
+        <h3><i class="bi bi-clock-fill"></i> Today's Schedule</h3>
+        <div class="appt-list">
+          @for (a of stats()['todayAppointmentsList']; track a.id) {
+            <div class="appt-row">
+              <div class="appt-time">{{ a.appointmentDate | date: 'HH:mm' }}</div>
+              <div class="appt-info">
+                <strong>{{ a.animalName }}</strong>
+                <span>{{ a.userName }}</span>
+              </div>
+              <span class="status-badge" [class]="'badge-' + a.status.toLowerCase()">{{
+                a.status
+              }}</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  }
+</div>

@@ -15,7 +15,7 @@ export class AdoptionRequestService {
 
   getMyRequests(page = 0, size = 10): Observable<Page<AdoptionRequestResponse>> {
     return this.http.get<Page<AdoptionRequestResponse>>(`${this.base}/my`, {
-      params: new HttpParams().set('page', page).set('size', size)
+      params: new HttpParams().set('page', page).set('size', size),
     });
   }
 

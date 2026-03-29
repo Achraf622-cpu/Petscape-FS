@@ -1,0 +1,108 @@
+<div class="page-enter">
+  <h2 class="admin-page-title"><i class="bi bi-gift-fill"></i> Donations Overview</h2>
+
+  @if (loading()) {
+    <div
+      class="skeleton"
+      style="height: 120px; border-radius: 0.75rem; margin-bottom: 1.5rem"
+    ></div>
+    <div class="skeleton" style="height: 400px; border-radius: 0.75rem"></div>
+  } @else {
+    @if (data()) {
+      <div class="stats-grid">
+        <div class="stat-card glass-card revenue">
+          <div class="icon-wrap"><i class="bi bi-cash-stack"></i></div>
+          <div class="stat-info">
+            <div class="stat-lbl">Total Raised</div>
+            <div class="stat-val">{{ data()['totalAmount'] | currency: 'USD' }}</div>
+          </div>
+        </div>
+
+        <div class="stat-card glass-card donors">
+          <div class="icon-wrap"><i class="bi bi-people-fill"></i></div>
+          <div class="stat-info">
+            <div class="stat-lbl">Unique Donors</div>
+            <div class="stat-val">{{ data()['uniqueDonors'] }}</div>
+          </div>
+        </div>
+
+        <div class="stat-card glass-card average">
+          <div class="icon-wrap"><i class="bi bi-graph-up-arrow"></i></div>
+          <div class="stat-info">
+            <div class="stat-lbl">Avg. Donation</div>
+            <div class="stat-val">{{ data()['averageDonation'] | currency: 'USD' }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass-card table-container">
+        <h3>Recent Donations</h3>
+        <div class="table-wrap">
+          @if (data()['donations']?.content?.length > 0) {
+            <table class="table table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Donor Email</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (d of data()['donations'].content; track d.id) {
+                  <tr>
+                    <td class="text-muted-custom">#{{ d.id }}</td>
+                    <td>
+                      <strong>{{ d.userEmail }}</strong>
+                    </td>
+                    <td class="amount-cell">{{ d.amount | currency: 'USD' }}</td>
+                    <td>
+                      @if (d.status === 'COMPLETED') {
+                        <span class="status-badge badge-approved"
+                          ><i class="bi bi-check-circle"></i> Paid</span
+                        >
+                      } @else {
+                        <span class="status-badge badge-pending"
+                          ><i class="bi bi-clock"></i> {{ d.status }}</span
+                        >
+                      }
+                    </td>
+                    <td class="text-muted-custom">{{ d.createdAt | date: 'MMM d, y, h:mm a' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          } @else {
+            <div class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>No donations recorded yet.</p>
+            </div>
+          }
+        </div>
+      </div>
+
+      @if (data()['donations']?.totalPages > 1) {
+        <div class="pag-wrap">
+          <button
+            class="page-btn"
+            [disabled]="data()['donations'].first"
+            (click)="load(data()['donations'].number - 1)"
+          >
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <span class="page-info"
+            >{{ data()['donations'].number + 1 }} / {{ data()['donations'].totalPages }}</span
+          >
+          <button
+            class="page-btn"
+            [disabled]="data()['donations'].last"
+            (click)="load(data()['donations'].number + 1)"
+          >
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      }
+    }
+  }
+</div>

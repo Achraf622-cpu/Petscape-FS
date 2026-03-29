@@ -1,0 +1,54 @@
+<div class="page-enter">
+  <div class="page-title-row">
+    <div>
+      <h2><i class="bi bi-megaphone-fill"></i> My Reports</h2>
+      <p>Your lost & found submissions</p>
+    </div>
+    <a routerLink="/reports" class="btn-primary btn-sm">
+      <i class="bi bi-search"></i> Browse Reports
+    </a>
+  </div>
+
+  @if (loading()) {
+    <div class="cards-list">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton" style="height: 80px; border-radius: 0.75rem"></div>
+      }
+    </div>
+  } @else if (page().content.length === 0) {
+    <div class="empty-state">
+      <i class="bi bi-megaphone"></i>
+      <h3>No reports yet</h3>
+      <p>Have you seen a lost animal? Help by creating a report!</p>
+    </div>
+  } @else {
+    <div class="cards-list">
+      @for (r of page().content; track r.id) {
+        <div class="report-row glass-card">
+          <div class="report-type-icon" [class]="r.type === 'LOST' ? 'type-lost' : 'type-found'">
+            <i
+              [class]="
+                r.type === 'LOST' ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'
+              "
+            ></i>
+          </div>
+          <div class="report-info">
+            <div class="report-top">
+              <span class="report-species">{{ r.species }}</span>
+              <span class="status-badge" [class]="'badge-' + r.status.toLowerCase()">{{
+                r.status
+              }}</span>
+            </div>
+            <p class="report-loc"><i class="bi bi-geo-alt"></i> {{ r.location }}</p>
+          </div>
+          <div class="report-actions">
+            <a [routerLink]="['/reports', r.id]" class="btn-view">View</a>
+            <button class="btn-sm-danger" (click)="delete(r.id)" [disabled]="deleting() === r.id">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

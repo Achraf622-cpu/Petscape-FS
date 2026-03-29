@@ -1,0 +1,41 @@
+.nf-page {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 2rem;
+}
+.nf-content {
+  max-width: 480px;
+}
+.nf-number {
+  font-size: 8rem;
+  font-weight: 900;
+  line-height: 1;
+  background: linear-gradient(135deg, #14b8a6, #7c3aed);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.nf-paw {
+  font-size: 3rem;
+  color: #374151;
+  margin-bottom: 1rem;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f9fafb;
+  margin-bottom: 0.75rem;
+}
+p {
+  color: #6b7280;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+.nf-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}

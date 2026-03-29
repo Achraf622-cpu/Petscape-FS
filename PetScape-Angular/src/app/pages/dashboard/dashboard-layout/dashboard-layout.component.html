@@ -1,0 +1,40 @@
+<div class="dashboard-layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="user-avatar">{{ initials() }}</div>
+      <div>
+        <div class="user-name">{{ fullName() }}</div>
+        <div class="user-role">{{ role() }}</div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard/profile" routerLinkActive="active">
+        <i class="bi bi-person-fill"></i> Profile
+      </a>
+      <a routerLink="/dashboard/adoptions" routerLinkActive="active">
+        <i class="bi bi-heart-fill"></i> My Adoptions
+      </a>
+      <a routerLink="/dashboard/appointments" routerLinkActive="active">
+        <i class="bi bi-calendar-fill"></i> Appointments
+      </a>
+      <a routerLink="/dashboard/reports" routerLinkActive="active">
+        <i class="bi bi-megaphone-fill"></i> My Reports
+      </a>
+      <a routerLink="/dashboard/notifications" routerLinkActive="active">
+        <i class="bi bi-bell-fill"></i> Notifications
+      </a>
+      <a routerLink="/dashboard/donate" routerLinkActive="active">
+        <i class="bi bi-gift-fill"></i> Donate
+      </a>
+      <hr class="sidebar-divider" />
+      <a routerLink="/animals" class="browse-link"> <i class="bi bi-search"></i> Browse Pets </a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dashboard-main">
+    <router-outlet />
+  </main>
+</div>

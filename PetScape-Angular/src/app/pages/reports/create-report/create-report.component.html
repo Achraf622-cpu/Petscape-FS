@@ -1,0 +1,183 @@
+<div class="page-enter">
+  <div class="form-header">
+    <a routerLink="/reports" class="back-link"><i class="bi bi-arrow-left"></i> Back to Reports</a>
+    <h2><i class="bi bi-megaphone-fill"></i> Submit a Report</h2>
+    <p>Help us find missing animals or report a found one</p>
+  </div>
+
+  <form class="report-form" (ngSubmit)="submit()">
+    <div class="form-grid">
+      <!-- Left column -->
+      <div class="form-col">
+        <div class="glass-card section-card">
+          <h3 class="section-title"><i class="bi bi-tag-fill"></i> Report Type</h3>
+          <div class="type-toggle">
+            <button
+              type="button"
+              class="type-btn"
+              [class.active-lost]="!form.isFound"
+              (click)="form.isFound = false"
+            >
+              <i class="bi bi-search-heart"></i> Lost Animal
+            </button>
+            <button
+              type="button"
+              class="type-btn"
+              [class.active-found]="form.isFound"
+              (click)="form.isFound = true"
+            >
+              <i class="bi bi-hand-thumbs-up-fill"></i> Found Animal
+            </button>
+          </div>
+        </div>
+
+        <div class="glass-card section-card">
+          <h3 class="section-title"><i class="bi bi-info-circle-fill"></i> Animal Info</h3>
+          <div class="field-row">
+            <div class="field">
+              <label>Species *</label>
+              <select class="form-select" [(ngModel)]="form.species" name="species" required>
+                <option value="">Select species</option>
+                @for (s of species(); track s) {
+                  <option [value]="s">{{ s }}</option>
+                }
+              </select>
+            </div>
+            <div class="field">
+              <label>Name (if known)</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="form.name"
+                name="name"
+                placeholder="e.g. Max"
+              />
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Breed</label>
+              <input class="form-control" type="text" [(ngModel)]="form.breed" name="breed" />
+            </div>
+            <div class="field">
+              <label>Gender</label>
+              <select class="form-select" [(ngModel)]="form.gender" name="gender">
+                <option value="">Unknown</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Description *</label>
+            <textarea
+              class="form-control"
+              rows="3"
+              [(ngModel)]="form.description"
+              name="description"
+              placeholder="Color, markings, collar, distinctive features..."
+              required
+            ></textarea>
+          </div>
+          <div class="field">
+            <label>Photo</label>
+            <div class="file-drop" (click)="fileInput.click()" [class.has-file]="!!selectedFile">
+              <i class="bi bi-camera"></i>
+              {{ selectedFile ? selectedFile.name : 'Click to upload a photo' }}
+            </div>
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              style="display: none"
+              (change)="onFileChange($event)"
+            />
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column -->
+      <div class="form-col">
+        <div class="glass-card section-card">
+          <h3 class="section-title"><i class="bi bi-geo-alt-fill"></i> Location</h3>
+          <div class="field">
+            <label>Location Description *</label>
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="form.location"
+              name="location"
+              placeholder="e.g. Near Central Park, New York"
+              required
+            />
+          </div>
+
+          <!-- Map Picker -->
+          <div class="map-picker-label">
+            <span><i class="bi bi-pin-map-fill"></i> Pin exact location on map</span>
+            @if (form.latitude && form.longitude) {
+              <button type="button" class="clear-pin-btn" (click)="clearPin()">
+                <i class="bi bi-x-circle"></i> Clear pin
+              </button>
+            }
+          </div>
+          <div class="map-picker-hint">
+            @if (form.latitude && form.longitude) {
+              <span class="coord-display"
+                >📍 {{ form.latitude | number: '1.4-4' }},
+                {{ form.longitude | number: '1.4-4' }}</span
+              >
+            } @else {
+              <span>Click anywhere on the map to drop a pin</span>
+            }
+          </div>
+          <div #mapEl id="create-report-map"></div>
+        </div>
+
+        <div class="glass-card section-card">
+          <h3 class="section-title"><i class="bi bi-person-fill"></i> Contact Info</h3>
+          <div class="field">
+            <label>Your Name *</label>
+            <input
+              class="form-control"
+              type="text"
+              [(ngModel)]="form.contactName"
+              name="contactName"
+              required
+            />
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Email *</label>
+              <input
+                class="form-control"
+                type="email"
+                [(ngModel)]="form.contactEmail"
+                name="contactEmail"
+                required
+              />
+            </div>
+            <div class="field">
+              <label>Phone *</label>
+              <input
+                class="form-control"
+                type="text"
+                [(ngModel)]="form.contactPhone"
+                name="contactPhone"
+                required
+              />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary submit-btn" [disabled]="loading()">
+          @if (loading()) {
+            <span class="spinner-border spinner-border-sm me-2"></span> Submitting...
+          } @else {
+            <i class="bi bi-send-fill"></i> Submit Report
+          }
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

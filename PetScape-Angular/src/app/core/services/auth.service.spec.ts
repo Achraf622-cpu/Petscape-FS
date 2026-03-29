@@ -12,11 +12,7 @@ describe('AuthService', () => {
   beforeEach(() => {
     localStorage.clear();
     TestBed.configureTestingModule({
-      providers: [
-        AuthService,
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+      providers: [AuthService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -39,10 +35,10 @@ describe('AuthService', () => {
       email: 'test@test.com',
       firstname: 'Test',
       lastname: 'User',
-      role: 'USER'
+      role: 'USER',
     };
 
-    service.login({ email: 'test@test.com', password: 'password' }).subscribe(res => {
+    service.login({ email: 'test@test.com', password: 'password' }).subscribe((res) => {
       expect(res).toEqual(mockResponse);
       expect(service.getToken()).toBe('fake-jwt');
       expect(localStorage.getItem('petscape_refresh')).toBe('fake-refresh');
@@ -57,7 +53,7 @@ describe('AuthService', () => {
   it('should clear session on logout', () => {
     localStorage.setItem('petscape_refresh', 'fake-refresh');
     service.logout();
-    
+
     const req = httpMock.expectOne(`${environment.apiUrl}/auth/logout`);
     expect(req.request.method).toBe('POST');
     req.flush(null);

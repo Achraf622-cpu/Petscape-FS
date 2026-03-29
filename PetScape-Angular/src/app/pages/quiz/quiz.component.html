@@ -1,0 +1,103 @@
+<div class="quiz-page page-enter">
+  @if (!started()) {
+    <!-- ── Landing ── -->
+    <div class="quiz-landing">
+      <div class="landing-glow"></div>
+      <div class="landing-emoji">🐾</div>
+      <h1>Find Your Perfect Pet Match</h1>
+      <p>
+        Answer 6 quick questions and we'll recommend the best type of animal companion for your
+        lifestyle.
+      </p>
+      <div class="species-preview">
+        @for (r of previewResults; track r.species) {
+          <div class="species-chip" [style.border-color]="r.color">
+            <span>{{ r.emoji }}</span> {{ r.species }}
+          </div>
+        }
+      </div>
+      <button class="btn-start" (click)="start()">
+        <i class="bi bi-play-circle-fill"></i> Start the Quiz
+      </button>
+    </div>
+  }
+
+  @if (started() && !result()) {
+    <!-- ── Active Question ── -->
+    <div class="quiz-card glass-card">
+      <!-- Progress bar -->
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" [style.width.%]="progressPct()"></div>
+      </div>
+
+      <div class="quiz-meta">
+        <span class="question-count">Question {{ currentQ() + 1 }} of {{ questions.length }}</span>
+        <button class="restart-btn" (click)="reset()">
+          <i class="bi bi-arrow-counterclockwise"></i> Restart
+        </button>
+      </div>
+
+      <div class="question-emoji">{{ questions[currentQ()].emoji }}</div>
+      <h2 class="question-text">{{ questions[currentQ()].text }}</h2>
+
+      <div class="options-grid">
+        @for (opt of questions[currentQ()].options; track opt.value) {
+          <button
+            class="option-btn"
+            [class.selected]="answers()[currentQ()] === opt.value"
+            (click)="selectAnswer(opt.value)"
+          >
+            <span class="opt-emoji">{{ opt.emoji }}</span>
+            {{ opt.label }}
+          </button>
+        }
+      </div>
+
+      <div class="quiz-nav">
+        <button class="nav-btn" (click)="prev()" [disabled]="currentQ() === 0">
+          <i class="bi bi-arrow-left"></i> Back
+        </button>
+        <button class="nav-btn next-btn" (click)="next()" [disabled]="!answers()[currentQ()]">
+          {{ currentQ() === questions.length - 1 ? 'See Results 🎉' : 'Next' }}
+          <i class="bi bi-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (result()) {
+    <!-- ── Result ── -->
+    <div class="result-card glass-card" [style.border-color]="result()!.color + '40'">
+      <div class="result-emoji" [style.background]="result()!.color + '20'">
+        {{ result()!.emoji }}
+      </div>
+      <h2 class="result-title" [style.color]="result()!.color">{{ result()!.title }}</h2>
+      <p class="result-desc">{{ result()!.description }}</p>
+
+      <div class="result-traits">
+        @for (t of result()!.traits; track t) {
+          <span
+            class="trait-chip"
+            [style.border-color]="result()!.color + '50'"
+            [style.color]="result()!.color"
+          >
+            <i class="bi bi-check-circle-fill"></i> {{ t }}
+          </span>
+        }
+      </div>
+
+      <div class="result-cta">
+        <a [routerLink]="result()!.route" class="btn-primary">
+          <i class="bi bi-heart-fill"></i> Browse Available {{ result()!.species }}s
+        </a>
+        <button class="btn-outline btn-sm" (click)="reset()">
+          <i class="bi bi-arrow-repeat"></i> Try Again
+        </button>
+      </div>
+
+      <div class="share-hint">
+        💡 Tell a friend — they might be the perfect match for a different pet!
+      </div>
+    </div>
+  }
+</div>

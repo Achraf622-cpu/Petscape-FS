@@ -50,8 +50,7 @@ export interface AnimalResponse {
   description: string;
   status: 'AVAILABLE' | 'RESERVED' | 'ADOPTED';
   images: string[];
-  speciesId: number;
-  speciesName: string;
+  species: Species;
   createdAt: string;
   updatedAt: string;
 }
@@ -62,15 +61,11 @@ export interface AnimalRequest {
   age: number;
   gender: string;
   description: string;
-  speciesId: number;
+  species: Species;
 }
 
 // ── Species ───────────────────────────────────────────────────────────────
-export interface SpeciesResponse {
-  id: number;
-  name: string;
-  description: string;
-}
+export type Species = 'DOG' | 'CAT' | 'BIRD' | 'RABBIT' | 'HAMSTER' | 'FISH' | 'TURTLE' | 'OTHER';
 
 // ── Adoption Request ──────────────────────────────────────────────────────
 export interface AdoptionRequestResponse {
@@ -104,8 +99,7 @@ export interface AnimalReportResponse {
   userFullName: string;
   /** Derived from isFound: 'LOST' when false, 'FOUND' when true. Optional — backend returns isFound, frontend can map this. */
   type?: 'LOST' | 'FOUND';
-  speciesId: number;
-  speciesName: string;
+  species: Species;
   name: string;
   breed: string;
   age: number;

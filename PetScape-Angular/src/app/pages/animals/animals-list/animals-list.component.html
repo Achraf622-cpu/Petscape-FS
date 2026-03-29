@@ -1,0 +1,191 @@
+<div class="shop-layout">
+  <!-- Sidebar Filters -->
+  <aside class="shop-sidebar glass-card">
+    <h2 class="sidebar-title"><i class="bi bi-funnel-fill text-teal-400"></i> Filters</h2>
+
+    <div class="filter-section">
+      <label>Search</label>
+      <div class="search-wrap">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          [(ngModel)]="search"
+          class="form-control"
+          placeholder="Name or breed..."
+          (input)="onFilterChange()"
+        />
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <label>Species</label>
+      <div class="radio-list">
+        <label class="radio-item">
+          <input
+            type="radio"
+            name="species"
+            value=""
+            [(ngModel)]="selectedSpecies"
+            (change)="onFilterChange()"
+          />
+          <span class="custom-radio"></span> All Species
+        </label>
+        @for (s of species(); track s) {
+          <label class="radio-item">
+            <input
+              type="radio"
+              name="species"
+              [value]="s"
+              [(ngModel)]="selectedSpecies"
+              (change)="onFilterChange()"
+            />
+            <span class="custom-radio"></span> {{ s }}
+          </label>
+        }
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <label>Status</label>
+      <div class="radio-list">
+        <label class="radio-item">
+          <input
+            type="radio"
+            name="status"
+            value=""
+            [(ngModel)]="selectedStatus"
+            (change)="onFilterChange()"
+          />
+          <span class="custom-radio"></span> All Status
+        </label>
+        <label class="radio-item">
+          <input
+            type="radio"
+            name="status"
+            value="AVAILABLE"
+            [(ngModel)]="selectedStatus"
+            (change)="onFilterChange()"
+          />
+          <span class="custom-radio"></span> Available
+        </label>
+        <label class="radio-item">
+          <input
+            type="radio"
+            name="status"
+            value="RESERVED"
+            [(ngModel)]="selectedStatus"
+            (change)="onFilterChange()"
+          />
+          <span class="custom-radio"></span> Reserved
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-outline w-full mt-alert" (click)="resetFilters()">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
+    </button>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="shop-main">
+    <div class="shop-header">
+      <div>
+        <h1>Adopt a <span class="gradient-text">Pet</span></h1>
+        <p class="text-muted-custom">Find your new best friend from our available animals.</p>
+      </div>
+      @if (!loading()) {
+        <div class="results-count">Showing {{ page().totalElements }} results</div>
+      }
+    </div>
+
+    @if (loading()) {
+      <div class="shop-grid">
+        @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+          <div class="skeleton" style="height: 340px; border-radius: 1rem"></div>
+        }
+      </div>
+    } @else if (page().content.length === 0) {
+      <div class="empty-state">
+        <i class="bi bi-search"></i>
+        <h3>No pets match your criteria</h3>
+        <p>Try clearing your filters or searching for something else.</p>
+        <button class="btn-primary" (click)="resetFilters()">Clear All Filters</button>
+      </div>
+    } @else {
+      <div class="shop-grid">
+        @for (animal of page().content; track animal.id) {
+          <a
+            [routerLink]="['/animals', animal.id]"
+            class="product-card"
+            (mouseenter)="startCycle(animal.id, animal.images.length)"
+            (mouseleave)="stopCycle(animal.id)"
+          >
+            <div class="product-img-wrap">
+              @if (animal.images && animal.images.length > 0) {
+                @for (img of animal.images; track $index) {
+                  <img
+                    [src]="animalService.imageUrl(img)"
+                    [alt]="animal.name"
+                    class="product-img"
+                    [class.active]="$index === (activeIdx[animal.id] || 0)"
+                  />
+                }
+              } @else {
+                <div class="no-img"><i class="bi bi-camera"></i></div>
+              }
+              <span
+                class="status-badge shadow-sm"
+                [class]="'badge-' + animal.status.toLowerCase()"
+                >{{ animal.status }}</span
+              >
+              @if (animal.images && animal.images.length > 1) {
+                <div class="img-dots">
+                  @for (img of animal.images; track $index) {
+                    <span
+                      class="img-dot"
+                      [class.active-dot]="$index === (activeIdx[animal.id] || 0)"
+                    ></span>
+                  }
+                </div>
+              }
+              <div class="hover-overlay">
+                <button class="btn-quick-view">
+                  View Details <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+            <div class="product-info">
+              <div class="product-category">{{ animal.species }} · {{ animal.gender }}</div>
+              <h3 class="product-title">{{ animal.name }}</h3>
+              <div class="product-props">
+                <span><i class="bi bi-tag-fill"></i> {{ animal.breed || 'Mixed' }}</span>
+                <span
+                  ><i class="bi bi-calendar-heart"></i> {{ animal.age }} yr{{
+                    animal.age === 1 ? '' : 's'
+                  }}</span
+                >
+              </div>
+            </div>
+          </a>
+        }
+      </div>
+
+      <!-- Pagination -->
+      @if (page().totalPages > 1) {
+        <div class="pagination-wrap">
+          <button class="page-btn" [disabled]="page().first" (click)="goToPage(currentPage() - 1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          @for (p of pageNumbers(); track p) {
+            <button class="page-btn" [class.active]="p === currentPage()" (click)="goToPage(p)">
+              {{ p + 1 }}
+            </button>
+          }
+          <button class="page-btn" [disabled]="page().last" (click)="goToPage(currentPage() + 1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      }
+    }
+  </main>
+</div>

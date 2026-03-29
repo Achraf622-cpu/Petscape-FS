@@ -9,12 +9,21 @@ export class ReportService {
   private base = `${environment.apiUrl}/reports`;
   constructor(private http: HttpClient) {}
 
-  getAll(params: { type?: string; speciesId?: number; location?: string; status?: string; page?: number; size?: number } = {}): Observable<Page<AnimalReportResponse>> {
+  getAll(
+    params: {
+      type?: string;
+      species?: string;
+      location?: string;
+      status?: string;
+      page?: number;
+      size?: number;
+    } = {},
+  ): Observable<Page<AnimalReportResponse>> {
     let p = new HttpParams();
-    if (params.type)      p = p.set('type', params.type);
-    if (params.speciesId) p = p.set('speciesId', params.speciesId);
-    if (params.location)  p = p.set('location', params.location);
-    if (params.status)    p = p.set('status', params.status);
+    if (params.type) p = p.set('type', params.type);
+    if (params.species) p = p.set('species', params.species);
+    if (params.location) p = p.set('location', params.location);
+    if (params.status) p = p.set('status', params.status);
     p = p.set('page', params.page ?? 0).set('size', params.size ?? 12);
     return this.http.get<Page<AnimalReportResponse>>(this.base, { params: p });
   }
@@ -25,7 +34,7 @@ export class ReportService {
 
   getMyReports(page = 0, size = 10): Observable<Page<AnimalReportResponse>> {
     return this.http.get<Page<AnimalReportResponse>>(`${this.base}/my`, {
-      params: new HttpParams().set('page', page).set('size', size)
+      params: new HttpParams().set('page', page).set('size', size),
     });
   }
 

@@ -1,0 +1,94 @@
+@if (loading()) {
+  <div class="page-pad">
+    <div class="skeleton" style="height: 380px; border-radius: 1rem"></div>
+  </div>
+} @else if (report()) {
+  <div class="detail-page page-enter">
+    <div class="container-custom">
+      <a routerLink="/reports" class="back-link"
+        ><i class="bi bi-arrow-left"></i> Back to Reports</a
+      >
+      <div class="detail-grid">
+        <div class="img-col">
+          <div class="detail-img-wrap">
+            @if (report()!.image) {
+              <img
+                [src]="reportService.imageUrl(report()!.image)"
+                [alt]="report()!.species"
+                class="detail-img"
+              />
+            } @else {
+              <div class="no-img"><i class="bi bi-camera"></i></div>
+            }
+          </div>
+        </div>
+        <div class="info-col">
+          <div class="type-row">
+            <span class="type-pill" [class]="!report()!.isFound ? 'type-lost' : 'type-found'">
+              <i
+                [class]="
+                  !report()!.isFound ? 'bi bi-exclamation-triangle-fill' : 'bi bi-check-circle-fill'
+                "
+              ></i>
+              {{ !report()!.isFound ? 'LOST' : 'FOUND' }}
+            </span>
+            <span class="status-badge" [class]="'badge-' + report()!.status.toLowerCase()">{{
+              report()!.status
+            }}</span>
+          </div>
+          <h1>
+            {{ report()!.species }} — {{ !report()!.isFound ? 'Missing' : 'Found' }} Animal
+          </h1>
+          <div class="detail-info-list">
+            <div class="info-item">
+              <i class="bi bi-geo-alt-fill"></i>
+              <div>
+                <strong>Location</strong>
+                <p>{{ report()!.location }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-calendar3"></i>
+              <div>
+                <strong>Reported</strong>
+                <p>{{ report()!.createdAt | date: 'MMMM d, y' }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-person-fill"></i>
+              <div>
+                <strong>Reported by</strong>
+                <p>{{ report()!.userFullName }}</p>
+              </div>
+            </div>
+            <div class="info-item">
+              <i class="bi bi-telephone-fill"></i>
+              <div>
+                <strong>Contact</strong>
+                <p>
+                  {{ report()!.contactName }} · {{ report()!.contactEmail }} ·
+                  {{ report()!.contactPhone }}
+                </p>
+              </div>
+            </div>
+          </div>
+          @if (canMarkAsFound()) {
+            <div class="mark-found-box">
+              <p>You reported this animal as lost. Has your pet been found?</p>
+              <button class="btn-primary" (click)="markAsFound()" [disabled]="markingResolved()">
+                @if (markingResolved()) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                <i class="bi bi-check-circle-fill"></i> I found my pet — mark as resolved
+              </button>
+            </div>
+          }
+          <div class="description-box">
+            <h3>Description</h3>
+            <p>{{ report()!.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

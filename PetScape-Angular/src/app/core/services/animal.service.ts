@@ -9,22 +9,41 @@ export class AnimalService {
   private base = `${environment.apiUrl}/animals`;
   constructor(private http: HttpClient) {}
 
-  getAll(params: { speciesId?: number; status?: string; search?: string; page?: number; size?: number } = {}): Observable<Page<AnimalResponse>> {
+  getAll(
+    params: {
+      species?: string;
+      status?: string;
+      search?: string;
+      page?: number;
+      size?: number;
+    } = {},
+  ): Observable<Page<AnimalResponse>> {
     let p = new HttpParams();
-    if (params.speciesId) p = p.set('speciesId', params.speciesId);
-    if (params.status)    p = p.set('status', params.status);
-    if (params.search)    p = p.set('search', params.search);
+    if (params.species) p = p.set('species', params.species);
+    if (params.status) p = p.set('status', params.status);
+    if (params.search) p = p.set('search', params.search);
     p = p.set('page', params.page ?? 0).set('size', params.size ?? 12);
     return this.http.get<Page<AnimalResponse>>(this.base, { params: p });
   }
 
-  getForAdoption(params: { speciesId?: number; maxAge?: number; search?: string; page?: number; size?: number } = {}): Observable<{ animals: Page<AnimalResponse>; adoptedCount: number }> {
+  getForAdoption(
+    params: {
+      species?: string;
+      maxAge?: number;
+      search?: string;
+      page?: number;
+      size?: number;
+    } = {},
+  ): Observable<{ animals: Page<AnimalResponse>; adoptedCount: number }> {
     let p = new HttpParams();
-    if (params.speciesId) p = p.set('speciesId', params.speciesId);
-    if (params.maxAge)    p = p.set('maxAge', params.maxAge);
-    if (params.search)    p = p.set('search', params.search);
+    if (params.species) p = p.set('species', params.species);
+    if (params.maxAge) p = p.set('maxAge', params.maxAge);
+    if (params.search) p = p.set('search', params.search);
     p = p.set('page', params.page ?? 0).set('size', params.size ?? 12);
-    return this.http.get<{ animals: Page<AnimalResponse>; adoptedCount: number }>(`${this.base}/adoption`, { params: p });
+    return this.http.get<{ animals: Page<AnimalResponse>; adoptedCount: number }>(
+      `${this.base}/adoption`,
+      { params: p },
+    );
   }
 
   getById(id: number): Observable<AnimalResponse> {

@@ -1,0 +1,83 @@
+.admin-page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1.5rem;
+}
+.admin-page-title i {
+  color: #a78bfa;
+}
+.table-wrap {
+  overflow-x: auto;
+}
+.text-sm {
+  font-size: 0.8rem;
+}
+.btn-action {
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-right: 0.35rem;
+  transition: all 0.2s;
+}
+.approve {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.approve:hover {
+  background: rgba(16, 185, 129, 0.25);
+}
+.reject {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+.reject:hover {
+  background: rgba(239, 68, 68, 0.22);
+}
+.btn-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.pag-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.page-btn {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #9ca3af;
+  border-radius: 0.5rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.page-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+}

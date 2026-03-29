@@ -9,13 +9,18 @@ export class AppointmentService {
   private base = `${environment.apiUrl}/appointments`;
   constructor(private http: HttpClient) {}
 
-  book(body: { animalId: number; date: string; timeSlot: string; notes?: string }): Observable<AppointmentResponse> {
+  book(body: {
+    animalId: number;
+    date: string;
+    timeSlot: string;
+    notes?: string;
+  }): Observable<AppointmentResponse> {
     return this.http.post<AppointmentResponse>(this.base, body);
   }
 
   getMyAppointments(page = 0, size = 10): Observable<Page<AppointmentResponse>> {
     return this.http.get<Page<AppointmentResponse>>(`${this.base}/my`, {
-      params: new HttpParams().set('page', page).set('size', size)
+      params: new HttpParams().set('page', page).set('size', size),
     });
   }
 

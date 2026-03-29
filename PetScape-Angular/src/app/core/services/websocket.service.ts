@@ -23,7 +23,6 @@ export class WebSocketService {
   connect(token: string): void {
     if (this.client?.active) return; // already connected
 
-
     const apiBase = environment.apiUrl; // e.g. '/api' or 'http://localhost:8080/api'
     let wsUrl: string;
     if (apiBase.startsWith('http')) {
@@ -42,18 +41,15 @@ export class WebSocketService {
       reconnectDelay: 5000,
       onConnect: () => {
         this.connected.set(true);
-        this.subscription = this.client!.subscribe(
-          '/user/queue/notifications',
-          (msg: IMessage) => {
-            try {
-              const notif: WsNotification = JSON.parse(msg.body);
-              this.wsNotifications.update(n => [notif, ...n]);
-              this.unreadCount.update(c => c + 1);
-            } catch (e) {
-              console.warn('[WS] Failed to parse notification:', e);
-            }
+        this.subscription = this.client!.subscribe('/user/queue/notifications', (msg: IMessage) => {
+          try {
+            const notif: WsNotification = JSON.parse(msg.body);
+            this.wsNotifications.update((n) => [notif, ...n]);
+            this.unreadCount.update((c) => c + 1);
+          } catch (e) {
+            console.warn('[WS] Failed to parse notification:', e);
           }
-        );
+        });
       },
       onDisconnect: () => {
         this.connected.set(false);

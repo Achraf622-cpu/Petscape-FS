@@ -1,10 +1,14 @@
 import { inject, Injector, runInInjectionContext } from '@angular/core';
-import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import {
+  HttpInterceptorFn,
+  HttpErrorResponse,
+  HttpRequest,
+  HttpHandlerFn,
+} from '@angular/common/http';
 import { throwError, BehaviorSubject, Observable, from } from 'rxjs';
 import { catchError, switchMap, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-
 
 let isRefreshing = false;
 const refreshSubject = new BehaviorSubject<string | null>(null);
@@ -12,7 +16,7 @@ const refreshSubject = new BehaviorSubject<string | null>(null);
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const injector = inject(Injector);
 
-   if (req.url.includes('/auth/')) {
+  if (req.url.includes('/auth/')) {
     return next(req);
   }
 
@@ -30,7 +34,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           return handle401(req, next, authService, router);
         }
         return throwError(() => err);
-      })
+      }),
     );
   });
 };
@@ -43,30 +47,29 @@ function handle401(
   req: HttpRequest<unknown>,
   next: HttpHandlerFn,
   authService: AuthService,
-  router: Router
+  router: Router,
 ): Observable<any> {
   if (!isRefreshing) {
     isRefreshing = true;
     refreshSubject.next(null);
 
     return authService.refresh().pipe(
-      switchMap(res => {
+      switchMap((res) => {
         isRefreshing = false;
         refreshSubject.next(res.token);
         return next(addToken(req, res.token));
       }),
-      catchError(err => {
+      catchError((err) => {
         isRefreshing = false;
         authService.logout();
         return throwError(() => err);
-      })
+      }),
     );
   }
 
-
   return refreshSubject.pipe(
-    filter(token => token !== null),
+    filter((token) => token !== null),
     take(1),
-    switchMap(token => next(addToken(req, token!)))
+    switchMap((token) => next(addToken(req, token!))),
   );
 }

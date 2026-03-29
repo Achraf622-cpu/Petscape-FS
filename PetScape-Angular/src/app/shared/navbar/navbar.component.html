@@ -1,0 +1,108 @@
+<nav class="navbar-custom" [class.scrolled]="scrolled()">
+  <div class="nav-inner">
+    <!-- Logo -->
+    <a routerLink="/" class="brand">
+      <div class="brand-icon">
+        <i class="bi bi-heart-fill"></i>
+      </div>
+      <span class="brand-name">PetsCape</span>
+    </a>
+
+    <!-- Desktop Nav -->
+    <ul class="nav-links">
+      <li>
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }"
+          >Home</a
+        >
+      </li>
+      <li><a routerLink="/animals" routerLinkActive="active">Adopt</a></li>
+      <li><a routerLink="/reports" routerLinkActive="active">Lost & Found</a></li>
+      <li>
+        <a routerLink="/stats" routerLinkActive="active"
+          ><i class="bi bi-bar-chart-fill me-1"></i> Impact</a
+        >
+      </li>
+      <li>
+        <a routerLink="/quiz" routerLinkActive="active"
+          ><i class="bi bi-question-circle-fill me-1"></i> Quiz</a
+        >
+      </li>
+      @if (isLoggedIn()) {
+        <li><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a></li>
+      }
+      @if (isAdmin()) {
+        <li><a routerLink="/admin" routerLinkActive="active" class="admin-link">Admin</a></li>
+      }
+    </ul>
+
+    <!-- Right side -->
+    <div class="nav-right">
+      @if (isLoggedIn()) {
+        <!-- Notifications bell with live WebSocket badge -->
+        <a routerLink="/dashboard/notifications" class="notif-btn">
+          <i class="bi bi-bell-fill" [class.bell-pulse]="wsCount() > 0"></i>
+          @if (totalUnread() > 0) {
+            <span class="notif-badge" [class.ws-badge]="wsCount() > 0">{{
+              totalUnread() > 9 ? '9+' : totalUnread()
+            }}</span>
+          }
+          @if (wsSvc.connected()) {
+            <span class="ws-dot" title="Real-time connected"></span>
+          }
+        </a>
+        <!-- User dropdown -->
+        <div class="user-menu" [class.open]="menuOpen()">
+          <button class="user-btn" (click)="toggleMenu()">
+            <div class="avatar">{{ initials() }}</div>
+            <span class="user-name">{{ firstName() }}</span>
+            <i class="bi bi-chevron-down chevron" [class.rotated]="menuOpen()"></i>
+          </button>
+          @if (menuOpen()) {
+            <div class="dropdown-panel">
+              <a routerLink="/dashboard/profile" (click)="closeMenu()">
+                <i class="bi bi-person"></i> Profile
+              </a>
+              <a routerLink="/dashboard/adoptions" (click)="closeMenu()">
+                <i class="bi bi-heart"></i> My Adoptions
+              </a>
+              <a routerLink="/dashboard/donate" (click)="closeMenu()">
+                <i class="bi bi-gift"></i> Donate
+              </a>
+              <hr />
+              <button (click)="logout()" class="logout-btn">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </button>
+            </div>
+          }
+        </div>
+      } @else {
+        <a routerLink="/auth/login" class="btn-outline-nav">Sign In</a>
+        <a routerLink="/auth/register" class="btn-primary-nav">Get Started</a>
+      }
+
+      <!-- Mobile hamburger -->
+      <button class="hamburger" (click)="toggleMobile()" [class.active]="mobileOpen()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  @if (mobileOpen()) {
+    <div class="mobile-menu">
+      <a routerLink="/" (click)="closeMobile()">Home</a>
+      <a routerLink="/animals" (click)="closeMobile()">Adopt a Pet</a>
+      <a routerLink="/reports" (click)="closeMobile()">Lost & Found</a>
+      @if (isLoggedIn()) {
+        <a routerLink="/dashboard" (click)="closeMobile()">Dashboard</a>
+        @if (isAdmin()) {
+          <a routerLink="/admin" (click)="closeMobile()">Admin Panel</a>
+        }
+        <button (click)="logout()" class="mobile-logout">Logout</button>
+      } @else {
+        <a routerLink="/auth/login" (click)="closeMobile()">Sign In</a>
+        <a routerLink="/auth/register" (click)="closeMobile()">Register</a>
+      }
+    </div>
+  }
+</nav>

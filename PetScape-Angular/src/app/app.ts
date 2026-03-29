@@ -8,16 +8,7 @@ import { ToastContainerComponent } from './shared/toast/toast-container.componen
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NavbarComponent, FooterComponent, ToastContainerComponent],
-  template: `
-    <app-navbar />
-    <main>
-      <router-outlet />
-    </main>
-    <app-footer />
-    <app-toast-container />
-  `,
-  styles: [`
-    main { min-height: calc(100vh - 72px - 220px); }
-  `]
+  templateUrl: './app.html',
+  styleUrl: './app.css',
 })
 export class App {}

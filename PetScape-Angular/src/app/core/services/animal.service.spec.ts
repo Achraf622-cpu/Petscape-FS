@@ -11,11 +11,7 @@ describe('AnimalService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        AnimalService,
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+      providers: [AnimalService, provideHttpClient(), provideHttpClientTesting()],
     });
     service = TestBed.inject(AnimalService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -30,9 +26,14 @@ describe('AnimalService', () => {
   });
 
   it('should get an animal by id', () => {
-    const mockAnimal = { id: 1, name: 'Buddy', breed: 'Golden', status: 'AVAILABLE' } as AnimalResponse;
+    const mockAnimal = {
+      id: 1,
+      name: 'Buddy',
+      breed: 'Golden',
+      status: 'AVAILABLE',
+    } as AnimalResponse;
 
-    service.getById(1).subscribe(res => {
+    service.getById(1).subscribe((res) => {
       expect(res).toEqual(mockAnimal);
     });
 
@@ -42,16 +43,25 @@ describe('AnimalService', () => {
   });
 
   it('should retrieve a list of animals with query params', () => {
-    const mockPage: Page<AnimalResponse> = { content: [], totalElements: 0, totalPages: 0, size: 12, number: 0, first: true, last: true };
+    const mockPage: Page<AnimalResponse> = {
+      content: [],
+      totalElements: 0,
+      totalPages: 0,
+      size: 12,
+      number: 0,
+      first: true,
+      last: true,
+    };
 
-    service.getAll({ speciesId: 2, status: 'AVAILABLE' }).subscribe(res => {
+    service.getAll({ speciesId: 2, status: 'AVAILABLE' }).subscribe((res) => {
       expect(res).toEqual(mockPage);
     });
 
-    const req = httpMock.expectOne(request => 
-      request.url === `${environment.apiUrl}/animals` && 
-      request.params.get('speciesId') === '2' && 
-      request.params.get('status') === 'AVAILABLE'
+    const req = httpMock.expectOne(
+      (request) =>
+        request.url === `${environment.apiUrl}/animals` &&
+        request.params.get('speciesId') === '2' &&
+        request.params.get('status') === 'AVAILABLE',
     );
     expect(req.request.method).toBe('GET');
     req.flush(mockPage);

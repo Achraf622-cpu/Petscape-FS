@@ -1,0 +1,120 @@
+<div class="stats-page page-enter">
+  <!-- Hero -->
+  <section class="stats-hero">
+    <div class="hero-glow"></div>
+    <div class="hero-content">
+      <div class="hero-badge"><i class="bi bi-bar-chart-fill"></i> Live Platform Stats</div>
+      <h1>PetsCape Impact</h1>
+      <p>
+        Every number here represents a life changed — an animal rescued, a family reunited, a future
+        made possible.
+      </p>
+    </div>
+  </section>
+
+  <!-- Main Stats Grid -->
+  @if (loading()) {
+    <div class="stats-grid">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton" style="height: 140px; border-radius: 1rem"></div>
+      }
+    </div>
+  } @else if (stats()) {
+    <div class="stats-grid">
+      <div class="stat-card teal">
+        <div class="stat-icon"><i class="bi bi-heart-fill"></i></div>
+        <div class="stat-number counter" [attr.data-target]="stats()!.adoptedAnimals">
+          {{ displayAdopted() }}
+        </div>
+        <div class="stat-label">Animals Adopted</div>
+        <div class="stat-sub">{{ stats()!.adoptionRate }}% adoption rate</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-icon"><i class="bi bi-paw-fill"></i></div>
+        <div class="stat-number">{{ displayAvailable() }}</div>
+        <div class="stat-label">Awaiting a Home</div>
+        <div class="stat-sub">{{ stats()!.totalAnimals | number }} total in our care</div>
+      </div>
+      <div class="stat-card rose">
+        <div class="stat-icon"><i class="bi bi-search-heart-fill"></i></div>
+        <div class="stat-number">{{ displayResolved() }}</div>
+        <div class="stat-label">Animals Reunited</div>
+        <div class="stat-sub">{{ stats()!.totalReports | number }} lost & found reports</div>
+      </div>
+      <div class="stat-card emerald">
+        <div class="stat-icon"><i class="bi bi-currency-dollar"></i></div>
+        <div class="stat-number">${{ displayDonated() }}</div>
+        <div class="stat-label">Donated</div>
+        <div class="stat-sub">Feeding, care & vet costs</div>
+      </div>
+    </div>
+
+    <!-- Progress Bars -->
+    <div class="progress-section glass-card">
+      <h2><i class="bi bi-graph-up-arrow"></i> Progress at a Glance</h2>
+      <div class="progress-item">
+        <div class="progress-label">
+          <span>Adoption Rate</span>
+          <span class="progress-pct">{{ stats()!.adoptionRate }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill teal-fill" [style.width.%]="stats()!.adoptionRate"></div>
+        </div>
+      </div>
+      <div class="progress-item">
+        <div class="progress-label">
+          <span>Report Resolution Rate</span>
+          <span class="progress-pct">{{ resolutionRate() }}%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill rose-fill" [style.width.%]="resolutionRate()"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission Section -->
+    <div class="mission-grid">
+      <div class="mission-card glass-card">
+        <i class="bi bi-shield-heart-fill mission-icon teal"></i>
+        <h3>Animal Welfare First</h3>
+        <p>
+          Every animal in our care receives veterinary attention, proper nutrition, and love before
+          being placed for adoption.
+        </p>
+      </div>
+      <div class="mission-card glass-card">
+        <i class="bi bi-geo-alt-fill mission-icon amber"></i>
+        <h3>GPS-Powered Lost & Found</h3>
+        <p>
+          Our interactive map makes it easy to report and locate lost animals across your city in
+          real-time.
+        </p>
+      </div>
+      <div class="mission-card glass-card">
+        <i class="bi bi-people-fill mission-icon rose"></i>
+        <h3>Community Driven</h3>
+        <p>
+          Thousands of volunteers, donors, and animal lovers unite on PetsCape to make a measurable
+          difference.
+        </p>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-section glass-card">
+      <h2>Ready to make an impact?</h2>
+      <p>Adopt, donate, or report a lost animal — every action counts.</p>
+      <div class="cta-btns">
+        <a routerLink="/animals" class="btn-primary"
+          ><i class="bi bi-heart-fill"></i> Adopt a Pet</a
+        >
+        <a routerLink="/dashboard/donate" class="btn-amber"
+          ><i class="bi bi-gift-fill"></i> Donate</a
+        >
+        <a routerLink="/reports/create" class="btn-outline"
+          ><i class="bi bi-megaphone-fill"></i> Report</a
+        >
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,73 @@
+<div class="page-enter">
+  <h2 class="admin-page-title"><i class="bi bi-people-fill"></i> Adoption Requests</h2>
+  @if (loading()) {
+    <div class="skeleton-list">
+      @for (i of [1, 2, 3, 4, 5]; track i) {
+        <div class="skeleton" style="height: 70px; border-radius: 0.75rem"></div>
+      }
+    </div>
+  } @else {
+    <div class="table-wrap glass-card">
+      <table class="table table-hover mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Applicant</th>
+            <th>Animal</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (req of page().content; track req.id) {
+            <tr>
+              <td class="text-muted-custom">#{{ req.id }}</td>
+              <td>{{ req.userFullName }}</td>
+              <td>
+                <strong>{{ req.animalName }}</strong>
+              </td>
+              <td class="text-muted-custom">{{ req.message | slice: 0 : 50 }}...</td>
+              <td>
+                <span class="status-badge" [class]="'badge-' + req.status.toLowerCase()">{{
+                  req.status
+                }}</span>
+              </td>
+              <td>
+                @if (req.status === 'PENDING') {
+                  <button
+                    class="btn-action approve"
+                    (click)="changeStatus(req.id, 'APPROVED')"
+                    [disabled]="processing() === req.id"
+                  >
+                    <i class="bi bi-check-lg"></i> Approve
+                  </button>
+                  <button
+                    class="btn-action reject"
+                    (click)="changeStatus(req.id, 'REJECTED')"
+                    [disabled]="processing() === req.id"
+                  >
+                    <i class="bi bi-x-lg"></i> Reject
+                  </button>
+                } @else {
+                  <span class="text-muted-custom text-sm">—</span>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+    @if (page().totalPages > 1) {
+      <div class="pag-wrap">
+        <button class="page-btn" [disabled]="page().first" (click)="load(page().number - 1)">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="page-info">{{ page().number + 1 }} / {{ page().totalPages }}</span>
+        <button class="page-btn" [disabled]="page().last" (click)="load(page().number + 1)">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+    }
+  }
+</div>

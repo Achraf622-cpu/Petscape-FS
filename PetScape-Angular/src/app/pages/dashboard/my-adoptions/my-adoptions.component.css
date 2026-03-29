@@ -1,0 +1,117 @@
+.page-title {
+  margin-bottom: 1.5rem;
+}
+.page-title h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #f9fafb;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.page-title h2 i {
+  color: #14b8a6;
+}
+.page-title p {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
+.cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.req-card {
+  padding: 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+.req-info h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f9fafb;
+  margin-bottom: 0.3rem;
+}
+.req-info p {
+  font-size: 0.8rem;
+  margin-bottom: 0.15rem;
+}
+.req-date {
+  font-size: 0.75rem !important;
+}
+.req-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.btn-sm-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  border-radius: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  transition: all 0.2s;
+}
+.btn-sm-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+}
+.btn-sm-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+.empty-state i {
+  font-size: 3rem;
+  color: #374151;
+  display: block;
+  margin-bottom: 1rem;
+}
+.empty-state h3 {
+  color: #6b7280;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.empty-state p {
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+}
+.pag-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+.page-btn {
+  background: rgba(31, 41, 55, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  color: #9ca3af;
+  border-radius: 0.5rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.page-info {
+  color: #6b7280;
+  font-size: 0.875rem;
+}
