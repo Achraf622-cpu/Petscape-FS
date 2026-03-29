@@ -1,6 +1,5 @@
 package com.petscape.service.impl;
 
-import com.petscape.annotation.Auditable;
 import com.petscape.dto.AdoptionRequestResponse;
 import com.petscape.entity.AdoptionRequest;
 import com.petscape.entity.AdoptionRequest.AdoptionStatus;
@@ -35,7 +34,6 @@ public class AdoptionRequestServiceImpl implements IAdoptionRequestService {
 
     @Override
     @Transactional
-    @Auditable(action = "CREATE_ADOPTION_REQUEST", entityType = "AdoptionRequest")
     public AdoptionRequestResponse store(Long animalId, String message, User currentUser) {
         Animal animal = animalRepository.findById(animalId)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal not found"));
@@ -59,7 +57,6 @@ public class AdoptionRequestServiceImpl implements IAdoptionRequestService {
 
     @Override
     @Transactional
-    @Auditable(action = "CANCEL_ADOPTION_REQUEST", entityType = "AdoptionRequest")
     public void cancel(Long id, User currentUser) {
         AdoptionRequest request = findById(id);
         if (!request.getUser().getId().equals(currentUser.getId())) {
@@ -77,7 +74,6 @@ public class AdoptionRequestServiceImpl implements IAdoptionRequestService {
 
     @Override
     @Transactional
-    @Auditable(action = "UPDATE_ADOPTION_STATUS", entityType = "AdoptionRequest")
     public AdoptionRequestResponse updateStatus(Long id, AdoptionStatus newStatus) {
         AdoptionRequest request = findById(id);
         Animal animal = request.getAnimal();

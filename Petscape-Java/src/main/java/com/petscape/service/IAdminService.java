@@ -1,7 +1,6 @@
 package com.petscape.service;
 
 import com.petscape.dto.*;
-import com.petscape.entity.AuditLog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -19,9 +18,6 @@ public interface IAdminService {
     Page<UserResponse> getUsers(Pageable pageable);
 
     Map<String, Object> getDonationStats(Pageable pageable);
-
-
-    Page<AuditLog> getAuditLogs(Long userId, String action, String entityType, Pageable pageable);
 
     // ── User Management ──
     Map<String, String> changeRole(Long userId, String role);

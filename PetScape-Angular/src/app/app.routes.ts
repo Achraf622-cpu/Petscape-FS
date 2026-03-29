@@ -196,13 +196,6 @@ export const routes: Routes = [
             (m) => m.AdminDonationsComponent,
           ),
       },
-      {
-        path: 'audit-logs',
-        loadComponent: () =>
-          import('./pages/admin/admin-audit-logs/admin-audit-logs.component').then(
-            (m) => m.AdminAuditLogsComponent,
-          ),
-      },
     ],
   },
 

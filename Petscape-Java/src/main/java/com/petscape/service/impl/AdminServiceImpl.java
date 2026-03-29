@@ -5,7 +5,6 @@ import com.petscape.dto.AnimalResponse;
 import com.petscape.dto.AppointmentResponse;
 import com.petscape.dto.UserResponse;
 import com.petscape.entity.Animal.AnimalStatus;
-import com.petscape.entity.AuditLog;
 import com.petscape.mapper.AdoptionRequestMapper;
 import com.petscape.mapper.AnimalMapper;
 import com.petscape.mapper.AppointmentMapper;
@@ -38,7 +37,6 @@ public class AdminServiceImpl implements IAdminService {
     private final AnimalReportRepository reportRepository;
     private final DonationRepository donationRepository;
     private final AdoptionRequestRepository adoptionRequestRepository;
-    private final AuditLogRepository auditLogRepository;
     private final AnimalMapper animalMapper;
     private final AppointmentMapper appointmentMapper;
     private final AdoptionRequestMapper adoptionRequestMapper;
@@ -136,17 +134,6 @@ public class AdminServiceImpl implements IAdminService {
         return stats;
     }
 
-    @Override
-    public Page<AuditLog> getAuditLogs(Long userId, String action, String entityType, Pageable pageable) {
-        if (userId != null) {
-            return auditLogRepository.findByUserId(userId, pageable);
-        } else if (action != null && !action.isBlank()) {
-            return auditLogRepository.findByAction(action, pageable);
-        } else if (entityType != null && !entityType.isBlank()) {
-            return auditLogRepository.findByEntityType(entityType, pageable);
-        }
-        return auditLogRepository.findAll(pageable);
-    }
 
     // ── User Management ──
 

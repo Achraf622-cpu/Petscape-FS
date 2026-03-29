@@ -67,21 +67,4 @@ export class AdminService {
   unbanUser(userId: number): Observable<{ message: string }> {
     return this.http.delete<{ message: string }>(`${this.base}/users/${userId}/ban`);
   }
-
-  getAuditLogs(
-    params: {
-      userId?: number;
-      action?: string;
-      entityType?: string;
-      page?: number;
-      size?: number;
-    } = {},
-  ): Observable<Page<any>> {
-    let p = new HttpParams();
-    if (params.userId) p = p.set('userId', params.userId);
-    if (params.action) p = p.set('action', params.action);
-    if (params.entityType) p = p.set('entityType', params.entityType);
-    p = p.set('page', params.page ?? 0).set('size', params.size ?? 20);
-    return this.http.get<Page<any>>(`${this.base}/audit-logs`, { params: p });
-  }
 }

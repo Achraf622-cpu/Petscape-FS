@@ -1,7 +1,6 @@
 package com.petscape.controller;
 
 import com.petscape.dto.*;
-import com.petscape.entity.AuditLog;
 import com.petscape.service.IAdminService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -77,18 +76,6 @@ public class AdminController {
             @RequestParam(defaultValue = "15") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
         return ResponseEntity.ok(adminService.getDonationStats(pageable));
-    }
-
-    @GetMapping("/audit-logs")
-    @Operation(summary = "Paginated audit log — filter by userId, action, or entityType")
-    public ResponseEntity<Page<AuditLog>> auditLogs(
-            @RequestParam(required = false) Long userId,
-            @RequestParam(required = false) String action,
-            @RequestParam(required = false) String entityType,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "timestamp"));
-        return ResponseEntity.ok(adminService.getAuditLogs(userId, action, entityType, pageable));
     }
 
     // ── User Management ──

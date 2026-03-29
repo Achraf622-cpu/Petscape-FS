@@ -1,6 +1,5 @@
 package com.petscape.service.impl;
 
-import com.petscape.annotation.Auditable;
 import com.petscape.dto.AppointmentRequest;
 import com.petscape.dto.AppointmentResponse;
 import com.petscape.entity.Animal;
@@ -41,7 +40,6 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
     @Override
     @Transactional
-    @Auditable(action = "BOOK_APPOINTMENT", entityType = "Appointment")
     public AppointmentResponse book(AppointmentRequest request, User currentUser) {
         Animal animal = animalRepository.findById(request.getAnimalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Animal not found"));
@@ -82,7 +80,6 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
     @Override
     @Transactional
-    @Auditable(action = "UPDATE_APPOINTMENT_STATUS", entityType = "Appointment")
     public AppointmentResponse updateStatus(Long id, AppointmentStatus status, User currentUser) {
         Appointment appointment = findById(id);
         appointment.setStatus(status);
@@ -111,7 +108,6 @@ public class AppointmentServiceImpl implements IAppointmentService {
 
     @Override
     @Transactional
-    @Auditable(action = "CANCEL_APPOINTMENT", entityType = "Appointment")
     public void cancel(Long id, User currentUser) {
         Appointment appointment = findById(id);
         if (!appointment.getUser().getId().equals(currentUser.getId()) && !currentUser.isAdmin()) {

@@ -53,7 +53,6 @@ public class OpenApiConfig {
                                                 - **DIP** — All controllers inject service *interfaces*, not implementations
                                                 - **SRP** — MapStruct handles all entity↔DTO mapping
                                                 - **OCP** — JPA Specification classes for extensible filtering
-                                                - **AOP** — Cross-cutting audit logging via `@Auditable`
 
                                                 ### Authentication
                                                 1. `POST /api/auth/register` or `POST /api/auth/login`

@@ -1,6 +1,5 @@
 package com.petscape.service.impl;
 
-import com.petscape.annotation.Auditable;
 import com.petscape.dto.AnimalRequest;
 import com.petscape.dto.AnimalResponse;
 import com.petscape.entity.Animal;
@@ -48,7 +47,6 @@ public class AnimalServiceImpl implements IAnimalService {
 
     @Override
     @Transactional
-    @Auditable(action = "CREATE_ANIMAL", entityType = "Animal")
     public AnimalResponse create(AnimalRequest request) {
         Species species = request.getSpecies();
         Animal animal = animalMapper.toEntity(request);
@@ -64,7 +62,6 @@ public class AnimalServiceImpl implements IAnimalService {
 
     @Override
     @Transactional
-    @Auditable(action = "UPDATE_ANIMAL", entityType = "Animal")
     public AnimalResponse update(Long id, AnimalRequest request) {
         Animal animal = findById(id);
         Species species = request.getSpecies();
@@ -103,7 +100,6 @@ public class AnimalServiceImpl implements IAnimalService {
 
     @Override
     @Transactional
-    @Auditable(action = "DELETE_ANIMAL", entityType = "Animal")
     public void delete(Long id) {
         Animal animal = findById(id);
         animal.getImages().forEach(fileStorageService::delete);
