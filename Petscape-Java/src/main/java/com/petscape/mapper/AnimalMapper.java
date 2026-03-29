@@ -8,12 +8,9 @@ import org.mapstruct.*;
 @Mapper
 public interface AnimalMapper {
 
-    @Mapping(target = "speciesId", source = "species.id")
-    @Mapping(target = "speciesName", source = "species.name")
     AnimalResponse toResponse(Animal animal);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "species", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -23,7 +20,6 @@ public interface AnimalMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "species", ignore = true)
     @Mapping(target = "images", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)

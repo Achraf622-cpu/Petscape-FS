@@ -8,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface IAnimalReportService {
-    Page<AnimalReportResponse> getAll(String type, Long speciesId, String location, String status, Pageable pageable);
+    Page<AnimalReportResponse> getAll(String type, com.petscape.entity.Species species, String location, String status, Pageable pageable);
 
     AnimalReportResponse getById(Long id);
 

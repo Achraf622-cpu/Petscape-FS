@@ -12,8 +12,7 @@ import java.time.LocalDateTime;
 public class AnimalResponse {
     private Long id;
     private String name;
-    private Long speciesId;
-    private String speciesName;
+    private com.petscape.entity.Species species;
     private String breed;
     private Integer age;
     private String description;

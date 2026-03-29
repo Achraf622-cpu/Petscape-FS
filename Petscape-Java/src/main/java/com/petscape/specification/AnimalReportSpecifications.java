@@ -9,9 +9,9 @@ public final class AnimalReportSpecifications {
     private AnimalReportSpecifications() {
     }
 
-    public static Specification<AnimalReport> withFilters(String type, Long speciesId, String location, String status) {
+    public static Specification<AnimalReport> withFilters(String type, com.petscape.entity.Species species, String location, String status) {
         return Specification.where(isOfType(type))
-                .and(hasSpecies(speciesId))
+                .and(hasSpecies(species))
                 .and(locationContains(location))
                 .and(hasStatus(status));
     }
@@ -26,9 +26,9 @@ public final class AnimalReportSpecifications {
         };
     }
 
-    public static Specification<AnimalReport> hasSpecies(Long speciesId) {
-        return (root, query, cb) -> speciesId == null ? cb.conjunction()
-                : cb.equal(root.get("species").get("id"), speciesId);
+    public static Specification<AnimalReport> hasSpecies(com.petscape.entity.Species species) {
+        return (root, query, cb) -> species == null ? cb.conjunction()
+                : cb.equal(root.get("species"), species);
     }
 
     public static Specification<AnimalReport> locationContains(String location) {

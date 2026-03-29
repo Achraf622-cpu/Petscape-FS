@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class AnimalReportRequest {
 
     @NotNull(message = "Species is required")
-    private Long speciesId;
+    private com.petscape.entity.Species species;
 
     private String name;
     private String breed;

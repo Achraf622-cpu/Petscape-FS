@@ -9,7 +9,6 @@ import com.petscape.entity.Species;
 import com.petscape.exception.ResourceNotFoundException;
 import com.petscape.mapper.AnimalMapper;
 import com.petscape.repository.AnimalRepository;
-import com.petscape.repository.SpeciesRepository;
 import com.petscape.service.IAnimalService;
 import com.petscape.service.IFileStorageService;
 import com.petscape.specification.AnimalSpecifications;
@@ -26,20 +25,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnimalServiceImpl implements IAnimalService {
 
     private final AnimalRepository animalRepository;
-    private final SpeciesRepository speciesRepository;
     private final IFileStorageService fileStorageService;
     private final AnimalMapper animalMapper;
 
     @Override
-    public Page<AnimalResponse> getAll(Long speciesId, String status, String search, Pageable pageable) {
-        Specification<Animal> spec = AnimalSpecifications.withFilters(speciesId, status, search);
+    public Page<AnimalResponse> getAll(com.petscape.entity.Species species, String status, String search, Pageable pageable) {
+        Specification<Animal> spec = AnimalSpecifications.withFilters(species, status, search);
         return animalRepository.findAll(spec, pageable).map(animalMapper::toResponse);
     }
 
     @Override
-    public Page<AnimalResponse> getAvailableForAdoption(Long speciesId, Integer maxAge, String search,
+    public Page<AnimalResponse> getAvailableForAdoption(com.petscape.entity.Species species, Integer maxAge, String search,
             Pageable pageable) {
-        Specification<Animal> spec = AnimalSpecifications.availableForAdoption(speciesId, maxAge, search);
+        Specification<Animal> spec = AnimalSpecifications.availableForAdoption(species, maxAge, search);
         return animalRepository.findAll(spec, pageable).map(animalMapper::toResponse);
     }
 
@@ -52,7 +50,7 @@ public class AnimalServiceImpl implements IAnimalService {
     @Transactional
     @Auditable(action = "CREATE_ANIMAL", entityType = "Animal")
     public AnimalResponse create(AnimalRequest request) {
-        Species species = findSpecies(request.getSpeciesId());
+        Species species = request.getSpecies();
         Animal animal = animalMapper.toEntity(request);
         animal.setSpecies(species);
         if (request.getImages() != null) {
@@ -69,7 +67,7 @@ public class AnimalServiceImpl implements IAnimalService {
     @Auditable(action = "UPDATE_ANIMAL", entityType = "Animal")
     public AnimalResponse update(Long id, AnimalRequest request) {
         Animal animal = findById(id);
-        Species species = findSpecies(request.getSpeciesId());
+        Species species = request.getSpecies();
         animalMapper.updateEntityFromRequest(request, animal);
         animal.setSpecies(species);
         
@@ -120,10 +118,5 @@ public class AnimalServiceImpl implements IAnimalService {
     private Animal findById(Long id) {
         return animalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Animal not found with id: " + id));
-    }
-
-    private Species findSpecies(Long speciesId) {
-        return speciesRepository.findById(speciesId)
-                .orElseThrow(() -> new ResourceNotFoundException("Species not found"));
     }
 }

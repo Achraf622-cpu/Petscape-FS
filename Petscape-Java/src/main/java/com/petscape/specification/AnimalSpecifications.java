@@ -9,15 +9,15 @@ public final class AnimalSpecifications {
     private AnimalSpecifications() {
     }
 
-    public static Specification<Animal> withFilters(Long speciesId, String status, String search) {
-        return hasSpecies(speciesId)
+    public static Specification<Animal> withFilters(com.petscape.entity.Species species, String status, String search) {
+        return hasSpecies(species)
                 .and(hasStatus(status))
                 .and(nameOrBreedOrDescriptionContains(search));
     }
 
-    public static Specification<Animal> availableForAdoption(Long speciesId, Integer maxAge, String search) {
+    public static Specification<Animal> availableForAdoption(com.petscape.entity.Species species, Integer maxAge, String search) {
         return Specification.where(isAvailable())
-                .and(hasSpecies(speciesId))
+                .and(hasSpecies(species))
                 .and(maxAgeIs(maxAge))
                 .and(nameOrBreedContains(search));
     }
@@ -38,9 +38,9 @@ public final class AnimalSpecifications {
         };
     }
 
-    public static Specification<Animal> hasSpecies(Long speciesId) {
-        return (root, query, cb) -> speciesId == null ? cb.conjunction()
-                : cb.equal(root.get("species").get("id"), speciesId);
+    public static Specification<Animal> hasSpecies(com.petscape.entity.Species species) {
+        return (root, query, cb) -> species == null ? cb.conjunction()
+                : cb.equal(root.get("species"), species);
     }
 
     public static Specification<Animal> maxAgeIs(Integer maxAge) {

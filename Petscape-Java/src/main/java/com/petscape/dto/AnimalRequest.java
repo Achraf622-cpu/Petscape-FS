@@ -13,7 +13,7 @@ public class AnimalRequest {
     private String name;
 
     @NotNull(message = "Species is required")
-    private Long speciesId;
+    private com.petscape.entity.Species species;
 
     @NotBlank(message = "Breed is required")
     private String breed;

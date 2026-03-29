@@ -30,7 +30,7 @@ public class AnimalController {
     @GetMapping
     @Operation(summary = "List all animals with optional filters")
     public ResponseEntity<Page<AnimalResponse>> index(
-            @RequestParam(required = false) Long speciesId,
+            @RequestParam(required = false) com.petscape.entity.Species species,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
@@ -38,19 +38,19 @@ public class AnimalController {
             @RequestParam(defaultValue = "createdAt,desc") String sort) {
         String[] sortParts = sort.split(",");
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortParts[1]), sortParts[0]));
-        return ResponseEntity.ok(animalService.getAll(speciesId, status, search, pageable));
+        return ResponseEntity.ok(animalService.getAll(species, status, search, pageable));
     }
 
     @GetMapping("/adoption")
     @Operation(summary = "List available animals for adoption (public)")
     public ResponseEntity<Map<String, Object>> adoptionPage(
-            @RequestParam(required = false) Long speciesId,
+            @RequestParam(required = false) com.petscape.entity.Species species,
             @RequestParam(required = false) Integer maxAge,
             @RequestParam(required = false) String search,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        Page<AnimalResponse> animals = animalService.getAvailableForAdoption(speciesId, maxAge, search, pageable);
+        Page<AnimalResponse> animals = animalService.getAvailableForAdoption(species, maxAge, search, pageable);
         return ResponseEntity.ok(Map.of(
                 "animals", animals,
                 "adoptedCount", animalService.getAdoptedCount()));

@@ -101,12 +101,12 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        // Account is locked if banned permanently or ban hasn't expired
+        
         if (!banned)
             return true;
         if (bannedUntil == null)
-            return false; // permanent ban
-        return LocalDateTime.now().isAfter(bannedUntil); // expired = unlocked
+            return false; 
+        return LocalDateTime.now().isAfter(bannedUntil); 
     }
 
     @Override
@@ -123,9 +123,7 @@ public class User implements UserDetails {
         return Role.ADMIN.equals(this.role);
     }
 
-    /**
-     * Check if the user is currently banned (respects ban expiry).
-     */
+   
     public boolean isCurrentlyBanned() {
         if (!banned)
             return false;

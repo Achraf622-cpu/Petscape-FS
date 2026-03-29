@@ -35,13 +35,13 @@ public class AnimalReportController {
     @Operation(summary = "List all reports with optional filters")
     public ResponseEntity<Page<AnimalReportResponse>> index(
             @RequestParam(required = false) String type,
-            @RequestParam(required = false) Long speciesId,
+            @RequestParam(required = false) com.petscape.entity.Species species,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
-        return ResponseEntity.ok(reportService.getAll(type, speciesId, location, status, pageable));
+        return ResponseEntity.ok(reportService.getAll(type, species, location, status, pageable));
     }
 
     @GetMapping("/{id}")

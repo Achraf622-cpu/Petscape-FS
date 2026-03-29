@@ -10,7 +10,6 @@ import com.petscape.exception.ForbiddenException;
 import com.petscape.exception.ResourceNotFoundException;
 import com.petscape.mapper.AnimalReportMapper;
 import com.petscape.repository.AnimalReportRepository;
-import com.petscape.repository.SpeciesRepository;
 import com.petscape.service.IAnimalReportService;
 import com.petscape.service.IFileStorageService;
 import com.petscape.specification.AnimalReportSpecifications;
@@ -26,14 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnimalReportServiceImpl implements IAnimalReportService {
 
     private final AnimalReportRepository reportRepository;
-    private final SpeciesRepository speciesRepository;
     private final IFileStorageService fileStorageService;
     private final AnimalReportMapper reportMapper;
 
     @Override
-    public Page<AnimalReportResponse> getAll(String type, Long speciesId, String location, String status,
+    public Page<AnimalReportResponse> getAll(String type, com.petscape.entity.Species species, String location, String status,
             Pageable pageable) {
-        Specification<AnimalReport> spec = AnimalReportSpecifications.withFilters(type, speciesId, location, status);
+        Specification<AnimalReport> spec = AnimalReportSpecifications.withFilters(type, species, location, status);
         return reportRepository.findAll(spec, pageable).map(reportMapper::toResponse);
     }
 
@@ -50,7 +48,7 @@ public class AnimalReportServiceImpl implements IAnimalReportService {
     @Override
     @Transactional
     public AnimalReportResponse create(AnimalReportRequest request, User currentUser) {
-        Species species = findSpecies(request.getSpeciesId());
+        Species species = request.getSpecies();
         AnimalReport report = AnimalReport.builder()
                 .user(currentUser).species(species)
                 .name(request.getName()).breed(request.getBreed())
@@ -71,7 +69,7 @@ public class AnimalReportServiceImpl implements IAnimalReportService {
     public AnimalReportResponse update(Long id, AnimalReportRequest request, User currentUser) {
         AnimalReport report = findById(id);
         checkOwnership(report, currentUser);
-        Species species = findSpecies(request.getSpeciesId());
+        Species species = request.getSpecies();
         report.setSpecies(species);
         report.setName(request.getName());
         report.setBreed(request.getBreed());
@@ -120,10 +118,5 @@ public class AnimalReportServiceImpl implements IAnimalReportService {
     private AnimalReport findById(Long id) {
         return reportRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Report not found with id: " + id));
-    }
-
-    private Species findSpecies(Long id) {
-        return speciesRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Species not found"));
     }
 }

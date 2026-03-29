@@ -12,8 +12,7 @@ public class AnimalReportResponse {
     private Long id;
     private Long userId;
     private String userFullName;
-    private Long speciesId;
-    private String speciesName;
+    private com.petscape.entity.Species species;
     private String name;
     private String breed;
     private Integer age;
@@ -36,8 +35,7 @@ public class AnimalReportResponse {
                 .id(r.getId())
                 .userId(r.getUser() != null ? r.getUser().getId() : null)
                 .userFullName(r.getUser() != null ? r.getUser().getFirstname() + " " + r.getUser().getLastname() : null)
-                .speciesId(r.getSpecies() != null ? r.getSpecies().getId() : null)
-                .speciesName(r.getSpecies() != null ? r.getSpecies().getName() : null)
+                .species(r.getSpecies())
                 .name(r.getName())
                 .breed(r.getBreed())
                 .age(r.getAge())

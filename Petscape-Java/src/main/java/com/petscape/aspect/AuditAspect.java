@@ -50,7 +50,7 @@ public class AuditAspect {
                     if (id != null)
                         entityId = id.toString();
                 } catch (NoSuchMethodException ignored) {
-                    // Not all return types have getId()
+                    
                 }
             }
         } finally {

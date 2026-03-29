@@ -25,6 +25,10 @@ public interface AdoptionRequestRepository extends JpaRepository<AdoptionRequest
 
     Page<AdoptionRequest> findByUserId(Long userId, Pageable pageable);
 
+     //Créer une méthode dans AdoptionRequestRepository pour récupérer toutes les demandes d'adoption dont le message contient un mot-clé donné
+
+    List<AdoptionRequest> findByMessageContaining(String motCle);
+
 
     @Query("SELECT MONTH(a.createdAt), COUNT(a) FROM AdoptionRequest a " +
             "WHERE YEAR(a.createdAt) = :year " +
